@@ -1,23 +1,152 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, Platform, Image } from 'react-native';
-import { Text, IconButton, FAB, Card, Portal, Modal, TextInput, Button } from 'react-native-paper';
+import { Text, IconButton, FAB, Card, Portal, Modal, TextInput, Button, Chip, Searchbar } from 'react-native-paper';
 import { getListItems, updateListItems } from '../utils/storage';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   interpolateColor,
 } from 'react-native-reanimated';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const ITEM_WIDTH = 80;
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const CONTAINER_PADDING = 20;
-const ITEM_SPACING = 4;
+// Ana kategorilere göre alt etiketler
+const SUB_TAGS = {
+  grocery: [
+    { id: 'fruits', label: 'Meyve', icon: 'fruit-cherries' },
+    { id: 'vegetables', label: 'Sebze', icon: 'carrot' },
+    { id: 'dairy', label: 'Süt Ürünleri', icon: 'cheese' },
+    { id: 'meat', label: 'Et Ürünleri', icon: 'food-steak' },
+    { id: 'bakery', label: 'Fırın', icon: 'bread-slice' },
+    { id: 'drinks', label: 'İçecek', icon: 'bottle-soda' },
+    { id: 'snacks', label: 'Atıştırmalık', icon: 'cookie' },
+    { id: 'cleaning', label: 'Temizlik', icon: 'spray-bottle' },
+  ],
+  home: [
+    { id: 'furniture', label: 'Mobilya', icon: 'sofa' },
+    { id: 'decoration', label: 'Dekorasyon', icon: 'lamp' },
+    { id: 'kitchen', label: 'Mutfak', icon: 'pot-steam' },
+    { id: 'bathroom', label: 'Banyo', icon: 'shower' },
+  ],
+  clothing: [
+    { id: 'tops', label: 'Üst Giyim', icon: 'tshirt-crew' },
+    { id: 'bottoms', label: 'Alt Giyim', icon: 'archive' },
+    { id: 'shoes', label: 'Ayakkabı', icon: 'shoe-heel' },
+    { id: 'accessories', label: 'Aksesuar', icon: 'glasses' },
+  ],
+  electronics: [
+    { id: 'computer', label: 'Bilgisayar', icon: 'laptop' },
+    { id: 'phone', label: 'Telefon', icon: 'cellphone' },
+    { id: 'gaming', label: 'Oyun', icon: 'gamepad-variant' },
+    { id: 'accessories', label: 'Aksesuar', icon: 'headphones' },
+  ],
+  health: [
+    { id: 'medicine', label: 'İlaç', icon: 'pill' },
+    { id: 'vitamins', label: 'Vitamin', icon: 'medication' },
+    { id: 'personal_care', label: 'Kişisel Bakım', icon: 'face-man-shimmer' },
+  ],
+  books: [
+    { id: 'fiction', label: 'Roman', icon: 'book-open-variant' },
+    { id: 'academic', label: 'Akademik', icon: 'school' },
+    { id: 'stationery', label: 'Kırtasiye', icon: 'pencil' },
+  ],
+  hobby: [
+    { id: 'art', label: 'Sanat', icon: 'palette' },
+    { id: 'sports', label: 'Spor', icon: 'basketball' },
+    { id: 'music', label: 'Müzik', icon: 'music' },
+    { id: 'garden', label: 'Bahçe', icon: 'flower' },
+  ],
+  gift: [
+    { id: 'special_day', label: 'Özel Gün', icon: 'gift' },
+    { id: 'birthday', label: 'Doğum Günü', icon: 'cake-variant' },
+    { id: 'holiday', label: 'Tatil', icon: 'palm-tree' },
+  ],
+};
 
-const CustomCheckbox = ({ checked, onPress }) => {
+const TAG_THEMES = {
+  grocery: {
+    primary: '#4CAF50',
+    pastel: '#F7F9F7',
+    surface: '#FFFFFF',
+    border: 'rgba(76, 175, 80, 0.12)',
+  },
+  home: {
+    primary: '#2196F3',
+    pastel: '#F7F9FB',
+    surface: '#FFFFFF',
+    border: 'rgba(33, 150, 243, 0.12)',
+  },
+  gift: {
+    primary: '#E91E63',
+    pastel: '#F9F7F8',
+    surface: '#FFFFFF',
+    border: 'rgba(233, 30, 99, 0.12)',
+  },
+  clothing: {
+    primary: '#9C27B0',
+    pastel: '#F9F7FA',
+    surface: '#FFFFFF',
+    border: 'rgba(156, 39, 176, 0.12)',
+  },
+  health: {
+    primary: '#F44336',
+    pastel: '#F9F7F7',
+    surface: '#FFFFFF',
+    border: 'rgba(244, 67, 54, 0.12)',
+  },
+  books: {
+    primary: '#FF9800',
+    pastel: '#F9F7F6',
+    surface: '#FFFFFF',
+    border: 'rgba(255, 152, 0, 0.12)',
+  },
+  electronics: {
+    primary: '#607D8B',
+    pastel: '#F7F8F9',
+    surface: '#FFFFFF',
+    border: 'rgba(96, 125, 139, 0.12)',
+  },
+  hobby: {
+    primary: '#795548',
+    pastel: '#F8F7F6',
+    surface: '#FFFFFF',
+    border: 'rgba(121, 85, 72, 0.12)',
+  },
+};
+
+const DEFAULT_THEME = {
+  primary: '#E6A4B4',
+  pastel: '#F8F7F7',
+  surface: '#FFFFFF',
+  border: 'rgba(230, 164, 180, 0.12)',
+};
+
+const getTagTheme = (tagId) => {
+  return tagId ? TAG_THEMES[tagId] || DEFAULT_THEME : DEFAULT_THEME;
+};
+
+const getTagShadowStyle = (tagColor) => {
+  if (!tagColor) return {};
+  
+  return Platform.select({
+    ios: {
+      shadowColor: tagColor,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.15,
+      shadowRadius: 3.5,
+    },
+    android: {
+      elevation: 3,
+    },
+  });
+};
+
+const CustomCheckbox = ({ checked, onPress, theme = DEFAULT_THEME }) => {
   const progress = useSharedValue(checked ? 1 : 0);
 
   useEffect(() => {
@@ -38,8 +167,9 @@ const CustomCheckbox = ({ checked, onPress }) => {
       backgroundColor: interpolateColor(
         progress.value,
         [0, 1],
-        ['#FFF8E3', '#E6A4B4']
+        [theme.surface, theme.primary]
       ),
+      borderColor: theme.primary,
     };
   });
 
@@ -50,7 +180,7 @@ const CustomCheckbox = ({ checked, onPress }) => {
           <IconButton
             icon="check"
             size={16}
-            color="#FFF8E3"
+            iconColor={theme.surface}
             style={styles.checkIcon}
           />
         )}
@@ -59,13 +189,14 @@ const CustomCheckbox = ({ checked, onPress }) => {
   );
 };
 
-const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
+const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, subTags, theme = DEFAULT_THEME }) => {
   const [formData, setFormData] = useState({
     name: editingItem?.name || '',
     quantity: editingItem?.quantity?.split(' ')[0] || '1',
     unit: editingItem?.quantity?.split(' ')[1] || 'pcs',
     image: editingItem?.image || null,
-    description: editingItem?.description || ''
+    description: editingItem?.description || '',
+    subTag: editingItem?.subTag || null,
   });
 
   const handleChange = useCallback((field, value) => {
@@ -84,7 +215,8 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
       quantity: `${formData.quantity} ${formData.unit}`,
       checked: editingItem?.checked || false,
       image: formData.image,
-      description: formData.description.trim()
+      description: formData.description.trim(),
+      subTag: formData.subTag,
     };
 
     onSubmit(item);
@@ -118,22 +250,26 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
   ];
 
   return (
-    <View style={styles.modalContent}>
-      <View style={styles.modalHeader}>
-        <Text style={styles.modalTitle}>
-          {editingItem ? 'Edit Item' : 'Add New Item'}
-        </Text>
+    <View style={[styles.modalContent, { backgroundColor: theme.pastel }]}>
+      <View style={[styles.modalHeader, { backgroundColor: theme.surface, borderColor: theme.border }]}>
         <IconButton
           icon="close"
           size={24}
           iconColor="#666"
           onPress={onClose}
         />
+        <Text style={styles.modalTitle}>
+          {editingItem ? 'Edit Item' : 'Add New Item'}
+        </Text>
+        <View style={{ width: 40 }} />
       </View>
 
-      <View style={styles.formContainer}>
+      <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
         <TouchableOpacity 
-          style={styles.imagePickerButton} 
+          style={[styles.imagePickerButton, { 
+            backgroundColor: theme.surface,
+            borderColor: theme.border
+          }]} 
           onPress={handleImagePick}
         >
           {formData.image ? (
@@ -146,10 +282,10 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
               <IconButton 
                 icon="camera" 
                 size={24} 
-                color="#E6A4B4"
+                color={theme.primary}
                 style={{ margin: 0 }}
               />
-              <Text style={styles.imagePlaceholderText}>Add Photo</Text>
+              <Text style={[styles.imagePlaceholderText, { color: theme.primary }]}>Add Photo</Text>
             </View>
           )}
         </TouchableOpacity>
@@ -159,12 +295,12 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
           <TextInput
             value={formData.name}
             onChangeText={(value) => handleChange('name', value)}
-            style={styles.input}
+            style={[styles.input, { backgroundColor: theme.surface }]}
             placeholder="Enter item name"
             placeholderTextColor="#999"
             mode="outlined"
-            outlineColor="#E6A4B4"
-            activeOutlineColor="#E6A4B4"
+            outlineColor={theme.border}
+            activeOutlineColor={theme.primary}
           />
         </View>
 
@@ -174,12 +310,12 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
             <TextInput
               value={formData.quantity}
               onChangeText={(value) => handleChange('quantity', value)}
-              style={[styles.input, { flex: 0.4 }]}
-              placeholder="Enter quantity"
+              style={[styles.input, { flex: 0.4, backgroundColor: theme.surface }]}
+              placeholder="1"
               placeholderTextColor="#999"
               mode="outlined"
-              outlineColor="#E6A4B4"
-              activeOutlineColor="#E6A4B4"
+              outlineColor={theme.border}
+              activeOutlineColor={theme.primary}
               keyboardType="numeric"
             />
             <View style={styles.unitSelector}>
@@ -193,13 +329,21 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
                     key={unit.value}
                     style={[
                       styles.unitButton,
-                      formData.unit === unit.value && styles.selectedUnitButton
+                      { 
+                        backgroundColor: theme.surface,
+                        borderColor: theme.border
+                      },
+                      formData.unit === unit.value && {
+                        backgroundColor: theme.primary,
+                        borderColor: theme.primary
+                      }
                     ]}
                     onPress={() => handleChange('unit', unit.value)}
                   >
                     <Text style={[
                       styles.unitButtonText,
-                      formData.unit === unit.value && styles.selectedUnitButtonText
+                      { color: theme.primary },
+                      formData.unit === unit.value && { color: theme.surface }
                     ]}>
                       {unit.label}
                     </Text>
@@ -215,25 +359,67 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
           <TextInput
             value={formData.description}
             onChangeText={(value) => handleChange('description', value)}
-            style={[styles.input, styles.descriptionInput]}
+            style={[styles.input, styles.descriptionInput, { backgroundColor: theme.surface }]}
             placeholder="Add a description"
             placeholderTextColor="#999"
             mode="outlined"
-            outlineColor="#E6A4B4"
-            activeOutlineColor="#E6A4B4"
+            outlineColor={theme.border}
+            activeOutlineColor={theme.primary}
             multiline
             numberOfLines={3}
           />
         </View>
-      </View>
 
-      <View style={styles.modalFooter}>
+        {subTags && subTags.length > 0 && (
+          <View style={styles.inputContainer}>
+            <Text style={styles.inputLabel}>Category</Text>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.subTagsRow}
+            >
+              {subTags.map((subTag) => (
+                <TouchableOpacity
+                  key={subTag.id}
+                  style={[
+                    styles.subTagButton,
+                    { 
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border
+                    },
+                    formData.subTag === subTag.id && {
+                      backgroundColor: theme.primary,
+                      borderColor: theme.primary
+                    }
+                  ]}
+                  onPress={() => handleChange('subTag', subTag.id)}
+                >
+                  <MaterialCommunityIcons
+                    name={subTag.icon}
+                    size={20}
+                    color={formData.subTag === subTag.id ? theme.surface : theme.primary}
+                  />
+                  <Text style={[
+                    styles.subTagButtonText,
+                    { color: theme.primary },
+                    formData.subTag === subTag.id && { color: theme.surface }
+                  ]}>
+                    {subTag.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
+      </ScrollView>
+
+      <View style={[styles.modalFooter, { backgroundColor: theme.pastel }]}>
         <Button
           mode="contained"
           onPress={handleSubmit}
           style={styles.submitButton}
-          buttonColor="#E6A4B4"
-          textColor="#FFF8E3"
+          buttonColor={theme.primary}
+          textColor={theme.surface}
         >
           {editingItem ? 'Save Changes' : 'Add Item'}
         </Button>
@@ -242,29 +428,48 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
   );
 });
 
-const EmptyState = () => (
-  <View style={styles.emptyStateContainer}>
-    <MaterialCommunityIcons name="cart-outline" size={120} color="#E6A4B4" />
-    <Text style={styles.emptyStateTitle}>Your shopping list is empty</Text>
-    <Text style={styles.emptyStateSubtitle}>Add some items to get started!</Text>
-  </View>
-);
-
 const ListDetailsScreen = ({ route, navigation }) => {
-  const { listId, listTitle, note } = route.params;
+  const { listId, listTitle, note, tag } = route.params;
   const [items, setItems] = useState([]);
   const [visible, setVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [detailsModalVisible, setDetailsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedSubTags, setSelectedSubTags] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([]);
+  const theme = getTagTheme(tag?.id);
 
   useEffect(() => {
     loadItems();
   }, [listId]);
 
+  useEffect(() => {
+    filterItems();
+  }, [items, searchQuery, selectedSubTags]);
+
   const loadItems = async () => {
     const loadedItems = await getListItems(listId);
     setItems(loadedItems);
+  };
+
+  const filterItems = () => {
+    let filtered = [...items];
+    
+    if (searchQuery) {
+      filtered = filtered.filter(item => 
+        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (selectedSubTags.length > 0) {
+      filtered = filtered.filter(item => 
+        selectedSubTags.includes(item.subTag)
+      );
+    }
+
+    setFilteredItems(filtered);
   };
 
   const toggleItem = async (id) => {
@@ -307,21 +512,21 @@ const ListDetailsScreen = ({ route, navigation }) => {
       <View style={styles.swipeActionsContainer}>
         <TouchableOpacity 
           onPress={() => startEditing(item)}
-          style={[styles.actionButton, styles.editButton]}>
+          style={[styles.actionButton, { backgroundColor: theme.primary }]}>
           <IconButton 
             icon="pencil" 
             size={24} 
-            iconColor="#FFF8E3" 
+            iconColor={theme.surface}
             style={{ margin: 0, width: 56, height: 56 }} 
           />
         </TouchableOpacity>
         <TouchableOpacity 
           onPress={() => deleteItem(item.id)}
-          style={[styles.actionButton, styles.deleteButton]}>
+          style={[styles.actionButton, { backgroundColor: 'rgba(244, 67, 54, 0.9)' }]}>
           <IconButton 
             icon="delete" 
             size={24} 
-            iconColor="#FFF8E3" 
+            iconColor={theme.surface}
             style={{ margin: 0, width: 56, height: 56 }} 
           />
         </TouchableOpacity>
@@ -330,27 +535,187 @@ const ListDetailsScreen = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.headerContent}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.pastel }]}>
+      <View style={[styles.header, { backgroundColor: theme.pastel }]}>
+        <View style={styles.headerLeft}>
           <IconButton
             icon="arrow-left"
             size={24}
-            color="#FFF8E3"
+            color="#333"
             onPress={() => navigation.goBack()}
           />
-          <Text style={styles.header}>{listTitle}</Text>
-          <IconButton
-            icon="share-variant-outline"
-            size={24}
-            color="#FFF8E3"
-            onPress={() => console.log('Share')}
-          />
+          <View>
+            <Text style={styles.headerTitle}>{listTitle}</Text>
+            {tag && (
+              <View style={styles.tagRow}>
+                <MaterialCommunityIcons
+                  name={tag.icon}
+                  size={16}
+                  color={tag.color}
+                />
+                <Text style={[styles.tagText, { color: tag.color }]}>{tag.label}</Text>
+              </View>
+            )}
+          </View>
         </View>
-        {note && (
-          <Text style={styles.noteText}>{note}</Text>
-        )}
+        <IconButton
+          icon="share-variant-outline"
+          size={24}
+          color="#333"
+          onPress={() => console.log('Share')}
+        />
       </View>
+
+      {note && (
+        <Text style={styles.noteText}>{note}</Text>
+      )}
+
+      <View style={styles.filterContainer}>
+        <Searchbar
+          placeholder="Search items"
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          style={[styles.searchBar, { backgroundColor: theme.surface }]}
+          inputStyle={styles.searchInput}
+          iconColor={theme.primary}
+        />
+      </View>
+
+      {tag && SUB_TAGS[tag.id] && (
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={styles.subTagsScroll}
+          contentContainerStyle={styles.subTagsContainer}
+        >
+          {SUB_TAGS[tag.id].map((subTag) => (
+            <Chip
+              key={subTag.id}
+              selected={selectedSubTags.includes(subTag.id)}
+              onPress={() => {
+                setSelectedSubTags(prev => 
+                  prev.includes(subTag.id)
+                    ? prev.filter(id => id !== subTag.id)
+                    : [...prev, subTag.id]
+                )
+              }}
+              style={[
+                styles.subTagChip,
+                { backgroundColor: theme.surface, borderColor: theme.border },
+                selectedSubTags.includes(subTag.id) && { backgroundColor: theme.primary }
+              ]}
+              textStyle={[
+                styles.subTagText,
+                { color: theme.primary },
+                selectedSubTags.includes(subTag.id) && styles.selectedSubTagText
+              ]}
+              icon={() => (
+                <MaterialCommunityIcons
+                  name={subTag.icon}
+                  size={16}
+                  color={selectedSubTags.includes(subTag.id) ? '#FFF8E3' : theme.primary}
+                />
+              )}
+            >
+              {subTag.label}
+            </Chip>
+          ))}
+        </ScrollView>
+      )}
+
+      {filteredItems.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <MaterialCommunityIcons 
+            name="cart-outline" 
+            size={120} 
+            color={theme.primary}
+          />
+          <Text style={[styles.emptyStateTitle, { color: theme.primary }]}>
+            {searchQuery || selectedSubTags.length > 0 
+              ? 'No matching items found'
+              : 'Your shopping list is empty'}
+          </Text>
+          <Text style={[styles.emptyStateSubtitle, { color: theme.primary }]}>
+            {searchQuery || selectedSubTags.length > 0 
+              ? 'Try different filters'
+              : 'Add some items to get started!'}
+          </Text>
+        </View>
+      ) : (
+        <ScrollView 
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollViewContent}
+        >
+          <GestureHandlerRootView>
+            {filteredItems.map((item) => (
+              <Swipeable
+                key={item.id}
+                renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item)}
+                rightThreshold={40}
+              >
+                <TouchableOpacity
+                  onPress={() => showItemDetails(item)}
+                  style={styles.cardWrapper}
+                >
+                  <Card style={[
+                    styles.itemCard,
+                    { 
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                    },
+                    getTagShadowStyle(theme.primary)
+                  ]}>
+                    <Card.Content style={styles.itemContent}>
+                      <View style={styles.itemMain}>
+                        <View style={styles.itemLeft}>
+                          <CustomCheckbox
+                            checked={item.checked}
+                            onPress={() => toggleItem(item.id)}
+                            theme={theme}
+                          />
+                          {item.image && (
+                            <Image 
+                              source={{ uri: item.image }} 
+                              style={styles.itemImage} 
+                            />
+                          )}
+                          <View style={styles.itemTextContainer}>
+                            <Text style={[
+                              styles.itemName,
+                              item.checked && styles.checkedItem
+                            ]}>{item.name}</Text>
+                            {item.description ? (
+                              <Text style={styles.itemDescription} numberOfLines={1}>
+                                {item.description}
+                              </Text>
+                            ) : null}
+                            {item.subTag && SUB_TAGS[tag?.id] && (
+                              <View style={styles.itemSubTagContainer}>
+                                <MaterialCommunityIcons
+                                  name={SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.icon}
+                                  size={12}
+                                  color={tag.color}
+                                />
+                                <Text style={[styles.itemSubTag, { color: tag.color }]}>
+                                  {SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.label}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        </View>
+                        <View style={styles.quantityContainer}>
+                          <Text style={[styles.quantity, { color: tag?.color }]}>{item.quantity}</Text>
+                        </View>
+                      </View>
+                    </Card.Content>
+                  </Card>
+                </TouchableOpacity>
+              </Swipeable>
+            ))}
+          </GestureHandlerRootView>
+        </ScrollView>
+      )}
 
       <Portal>
         <Modal
@@ -359,7 +724,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
             setVisible(false);
             setEditingItem(null);
           }}
-          contentContainerStyle={styles.modalContainer}>
+          contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.pastel }]}>
           <ScrollView>
             <AddItemForm
               onSubmit={handleSubmitItem}
@@ -368,6 +733,9 @@ const ListDetailsScreen = ({ route, navigation }) => {
                 setEditingItem(null);
               }}
               editingItem={editingItem}
+              tag={tag}
+              subTags={SUB_TAGS[tag?.id] || []}
+              theme={theme}
             />
           </ScrollView>
         </Modal>
@@ -382,13 +750,30 @@ const ListDetailsScreen = ({ route, navigation }) => {
           }}
           contentContainerStyle={styles.detailsModalContainer}>
           {selectedItem && (
-            <Card style={styles.detailsCard}>
+            <Card style={[styles.detailsCard, getTagShadowStyle(tag?.color)]}>
               {selectedItem.image && (
                 <Card.Cover source={{ uri: selectedItem.image }} style={styles.detailsImage} />
               )}
               <Card.Content style={styles.detailsCardContent}>
                 <Text style={styles.detailsTitle}>{selectedItem.name}</Text>
-                <Text style={styles.detailsQuantity}>Quantity: {selectedItem.quantity}</Text>
+                <Text style={[styles.detailsQuantity, { color: tag?.color }]}>
+                  Quantity: {selectedItem.quantity}
+                </Text>
+                {selectedItem.subTag && SUB_TAGS[tag?.id] && (
+                  <Chip
+                    style={[styles.detailsSubTag, { borderColor: tag.color }]}
+                    textStyle={{ color: tag.color }}
+                    icon={() => (
+                      <MaterialCommunityIcons
+                        name={SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.icon}
+                        size={16}
+                        color={tag.color}
+                      />
+                    )}
+                  >
+                    {SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.label}
+                  </Chip>
+                )}
                 {selectedItem.description && (
                   <>
                     <Text style={styles.descriptionLabel}>Description:</Text>
@@ -400,7 +785,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                 <Button
                   mode="contained"
                   onPress={() => setDetailsModalVisible(false)}
-                  buttonColor="#E6A4B4"
+                  buttonColor={tag?.color || "#E6A4B4"}
                   textColor="#FFF8E3"
                   style={styles.detailsCloseButton}>
                   Close
@@ -411,57 +796,9 @@ const ListDetailsScreen = ({ route, navigation }) => {
         </Modal>
       </Portal>
 
-      {items.length === 0 ? (
-        <EmptyState />
-      ) : (
-        <ScrollView style={styles.scrollView}>
-          <GestureHandlerRootView>
-            {items.map((item) => (
-              <Swipeable
-                key={item.id}
-                renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item)}
-                rightThreshold={40}
-              >
-                <TouchableOpacity
-                  onPress={() => showItemDetails(item)}>
-                  <Card style={styles.itemCard}>
-                    <Card.Content style={styles.itemContent}>
-                      <View style={styles.itemLeft}>
-                        <CustomCheckbox
-                          checked={item.checked}
-                          onPress={() => toggleItem(item.id)}
-                        />
-                        {item.image && (
-                          <Image 
-                            source={{ uri: item.image }} 
-                            style={styles.itemImage} 
-                          />
-                        )}
-                        <View style={styles.itemTextContainer}>
-                          <Text style={[
-                            styles.itemName,
-                            item.checked && styles.checkedItem
-                          ]}>{item.name}</Text>
-                          {item.description ? (
-                            <Text style={styles.itemDescription} numberOfLines={1}>
-                              {item.description}
-                            </Text>
-                          ) : null}
-                        </View>
-                      </View>
-                      <Text style={styles.quantity}>{item.quantity}</Text>
-                    </Card.Content>
-                  </Card>
-                </TouchableOpacity>
-              </Swipeable>
-            ))}
-          </GestureHandlerRootView>
-        </ScrollView>
-      )}
-
       <FAB
         icon="plus"
-        style={styles.fab}
+        style={[styles.fab, { backgroundColor: theme.primary }]}
         onPress={() => {
           setEditingItem(null);
           setVisible(true);
@@ -476,245 +813,162 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5EEE6',
-    borderTopWidth: 0,
-  },
-  headerContainer: {
-    backgroundColor: '#E6A4B4',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  headerContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF8E3',
-    textAlign: 'center',
-    flex: 1,
-  },
-  noteText: {
-    color: '#FFF8E3',
-    fontSize: 14,
-    marginTop: 8,
-    marginLeft: 48,
-    marginRight: 48,
-    opacity: 0.9,
-  },
-  listContainer: {
-    flex: 1,
-    padding: 14,
-  },
-  itemCard: {
-    marginBottom: 12,
-    backgroundColor: '#FFF8E3',
-    elevation: 2,
-    borderRadius: 12,
-    marginHorizontal: 2,
-    height: 56,
-  },
-  itemContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    height: 56,
+    paddingHorizontal: 8,
+    paddingTop: 8,
+    paddingBottom: 12,
+    backgroundColor: '#F5EEE6',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#333',
+    letterSpacing: 0.5,
+  },
+  tagRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  tagText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  noteText: {
+    color: '#666',
+    fontSize: 14,
+    marginHorizontal: 20,
+    marginBottom: 12,
+  },
+  filterContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
+  searchBar: {
+    backgroundColor: '#FFF8E3',
+    borderRadius: 12,
+    elevation: 0,
+  },
+  searchInput: {
+    fontSize: 16,
+  },
+  subTagsScroll: {
+    maxHeight: 40,
+    marginBottom: 12,
+  },
+  subTagsContainer: {
+    paddingHorizontal: 20,
+    gap: 8,
+  },
+  subTagChip: {
+    backgroundColor: '#FFF8E3',
+  },
+  subTagText: {
+    fontSize: 12,
+  },
+  selectedSubTagText: {
+    color: '#FFF8E3',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollViewContent: {
+    padding: 20,
+    paddingTop: 8,
+  },
+  cardWrapper: {
+    height: 80,
+    marginBottom: 12,
+    marginHorizontal: 2,
+  },
+  itemCard: {
+    height: '100%',
+    backgroundColor: '#FFF8E3',
+    borderRadius: 16,
+    borderWidth: Platform.OS === 'ios' ? 0 : 1,
+    borderColor: 'rgba(230, 164, 180, 0.1)',
+  },
+  itemContent: {
+    height: '100%',
+    padding: 12,
+    paddingHorizontal: 16,
+  },
+  itemMain: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    gap: 12,
+  },
+  itemTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 2,
   },
   itemName: {
     fontSize: 16,
-    marginLeft: 8,
     color: '#333',
-    transition: 'all 0.3s ease',
+    fontWeight: '500',
+    letterSpacing: 0.2,
   },
   checkedItem: {
     textDecorationLine: 'line-through',
     color: '#999',
     fontStyle: 'italic',
   },
-  quantity: {
-    fontSize: 14,
-    color: '#E6A4B4',
-    fontWeight: '500',
-  },
-  fab: {
-    position: 'absolute',
-    margin: 16,
-    right: 0,
-    bottom: 16,
-    backgroundColor: '#E6A4B4',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 100,
-  },
-  emptyText: {
-    fontSize: 18,
+  itemDescription: {
+    fontSize: 12,
     color: '#666',
-    marginBottom: 8,
   },
-  emptySubText: {
-    fontSize: 14,
-    color: '#999',
-  },
-  modalContainer: {
-    backgroundColor: '#F5EEE6',
-    margin: 20,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  modalContent: {
-    flex: 1,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    paddingVertical: 12,
-    backgroundColor: '#FFF8E3',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(230, 164, 180, 0.2)',
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#E6A4B4',
-    letterSpacing: 0.5,
-  },
-  formContainer: {
-    padding: 16,
-    paddingBottom: Platform.OS === 'ios' ? 90 : 80,
-  },
-  inputContainer: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333',
-    marginBottom: 8,
-  },
-  input: {
-    backgroundColor: '#FFF8E3',
-    fontSize: 16,
-    height: 40,
-  },
-  quantityRow: {
+  itemSubTagContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  unitSelector: {
-    flex: 1,
-    height: 40,
-  },
-  unitSelectorScroll: {
-    flexDirection: 'row',
-    paddingHorizontal: 4,
-  },
-  unitButton: {
-    paddingHorizontal: 16,
-    height: 40,
-    borderRadius: 8,
-    backgroundColor: '#FFF8E3',
-    borderWidth: 1,
-    borderColor: '#E6A4B4',
-    minWidth: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginHorizontal: 4,
-  },
-  selectedUnitButton: {
-    backgroundColor: '#E6A4B4',
-  },
-  unitButtonText: {
-    fontSize: 14,
-    color: '#E6A4B4',
-    fontWeight: '500',
-  },
-  selectedUnitButtonText: {
-    color: '#FFF8E3',
-  },
-  descriptionInput: {
-    height: 100,
-  },
-  imagePickerButton: {
-    width: '80%',
-    aspectRatio: 1,
-    maxHeight: 200,
-    marginBottom: 20,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#FFF8E3',
-    borderWidth: 1,
-    borderColor: '#E6A4B4',
-    borderStyle: 'dashed',
-    alignSelf: 'center',
-  },
-  selectedImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  imagePlaceholder: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#FFF8E3',
-    width: '100%',
     gap: 4,
   },
-  imagePlaceholderText: {
-    color: '#E6A4B4',
-    fontSize: 14,
-    textAlign: 'center',
+  itemSubTag: {
+    fontSize: 11,
     fontWeight: '500',
   },
-  modalFooter: {
-    padding: 16,
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: '#F5EEE6',
-    paddingBottom: Platform.OS === 'ios' ? 16 : 16,
-    borderTopWidth: 0,
+  quantityContainer: {
+    backgroundColor: 'rgba(230, 164, 180, 0.08)',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    minWidth: 50,
+    alignItems: 'center',
   },
-  submitButton: {
+  quantity: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  itemImage: {
+    width: 36,
+    height: 36,
     borderRadius: 8,
   },
-  swipeableContainer: {
-    overflow: 'hidden',
-  },
   checkboxContainer: {
-    marginRight: 8,
+    marginRight: 4,
   },
   checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#E6A4B4',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -722,17 +976,38 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
   },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+  modalContainer: {
+    backgroundColor: '#F5EEE6',
+    margin: 20,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
   detailsModalContainer: {
     margin: 20,
   },
   detailsCard: {
     backgroundColor: '#F5EEE6',
+    borderRadius: 16,
     overflow: 'hidden',
   },
   detailsImage: {
+    height: 200,
     backgroundColor: '#F5EEE6',
-    height: Dimensions.get('window').width - 40,
-    width: Dimensions.get('window').width - 40,
   },
   detailsCardContent: {
     padding: 16,
@@ -745,7 +1020,10 @@ const styles = StyleSheet.create({
   },
   detailsQuantity: {
     fontSize: 18,
-    color: '#E6A4B4',
+    marginBottom: 16,
+  },
+  detailsSubTag: {
+    alignSelf: 'flex-start',
     marginBottom: 16,
   },
   descriptionLabel: {
@@ -767,25 +1045,9 @@ const styles = StyleSheet.create({
   detailsCloseButton: {
     flex: 1,
   },
-  itemImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 8,
-    marginRight: 8,
-  },
-  itemTextContainer: {
-    flex: 1,
-    justifyContent: 'center',
-  },
-  itemDescription: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
   swipeActionsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    height: 56,
     gap: 4,
     paddingHorizontal: 4,
     marginBottom: 12,
@@ -798,13 +1060,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 12,
   },
-  editButton: {
-    backgroundColor: '#F3D7CA',
-  },
-  deleteButton: {
-    backgroundColor: '#E6A4B4',
-  },
-  emptyStateContainer: {
+  emptyContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -823,6 +1079,142 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: 'center',
     fontWeight: '500',
+  },
+  modalContent: {
+    flex: 1,
+    backgroundColor: '#F5EEE6',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#FFF8E3',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(230, 164, 180, 0.2)',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    textAlign: 'center',
+  },
+  formContainer: {
+    padding: 20,
+  },
+  imagePickerButton: {
+    width: '100%',
+    height: 200,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#FFF8E3',
+    borderWidth: 1,
+    borderColor: '#E6A4B4',
+    borderStyle: 'dashed',
+    marginBottom: 20,
+  },
+  selectedImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  imagePlaceholderText: {
+    fontSize: 14,
+    color: '#E6A4B4',
+    fontWeight: '500',
+  },
+  inputContainer: {
+    marginBottom: 20,
+  },
+  inputLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: '#FFF8E3',
+    fontSize: 16,
+  },
+  quantityRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  unitSelector: {
+    flex: 1,
+  },
+  unitSelectorScroll: {
+    paddingVertical: 4,
+    gap: 8,
+    flexDirection: 'row',
+  },
+  unitButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    backgroundColor: '#FFF8E3',
+    borderWidth: 1,
+    borderColor: '#E6A4B4',
+    minWidth: 50,
+    alignItems: 'center',
+  },
+  selectedUnitButton: {
+    backgroundColor: '#E6A4B4',
+    borderColor: '#E6A4B4',
+  },
+  unitButtonText: {
+    fontSize: 14,
+    color: '#E6A4B4',
+    fontWeight: '500',
+  },
+  selectedUnitButtonText: {
+    color: '#FFF8E3',
+  },
+  descriptionInput: {
+    height: 100,
+    textAlignVertical: 'top',
+  },
+  subTagsRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingVertical: 4,
+  },
+  subTagButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF8E3',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+  },
+  selectedSubTagButton: {
+    backgroundColor: '#E6A4B4',
+    borderColor: '#E6A4B4',
+  },
+  subTagButtonText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  selectedSubTagButtonText: {
+    color: '#FFF8E3',
+  },
+  modalFooter: {
+    padding: 20,
+    paddingTop: 0,
+    backgroundColor: '#F5EEE6',
+  },
+  submitButton: {
+    borderRadius: 12,
+    paddingVertical: 6,
   },
 });
 

@@ -18,10 +18,14 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#E6A4B4',
+    primary: '#6B7280',
+    secondary: '#9CA3AF',
     background: '#F5EEE6',
     surface: '#FFF8E3',
     accent: '#F3D7CA',
+    text: '#374151',
+    placeholder: '#9CA3AF',
+    disabled: '#E5E7EB',
   },
 };
 
@@ -56,22 +60,29 @@ export default function App() {
 
               return <MaterialCommunityIcons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor: '#E6A4B4',
-            tabBarInactiveTintColor: 'gray',
+            tabBarActiveTintColor: theme.colors.text,
+            tabBarInactiveTintColor: theme.colors.secondary,
             tabBarStyle: {
-              backgroundColor: '#FFF8E3',
+              backgroundColor: theme.colors.surface,
               borderTopWidth: 0,
-              elevation: 8,
+              elevation: 4,
+              shadowColor: theme.colors.text,
+              shadowOffset: {
+                width: 0,
+                height: -2,
+              },
+              shadowOpacity: 0.08,
+              shadowRadius: 3,
               height: 60,
               paddingBottom: 8,
             },
             headerStyle: {
-              backgroundColor: '#FFF8E3',
+              backgroundColor: theme.colors.surface,
               elevation: 0,
               shadowOpacity: 0,
             },
             headerTitleStyle: {
-              color: '#333',
+              color: theme.colors.text,
             },
           })}
         >

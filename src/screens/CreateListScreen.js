@@ -1,11 +1,24 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import { TextInput, Button, Text, IconButton, Snackbar } from 'react-native-paper';
 import { saveList } from '../utils/storage';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+
+const TAGS = [
+  { id: 'grocery', icon: 'cart', label: 'Market', color: '#4CAF50' },
+  { id: 'home', icon: 'home', label: 'Ev', color: '#2196F3' },
+  { id: 'gift', icon: 'gift', label: 'Hediye', color: '#E91E63' },
+  { id: 'clothing', icon: 'tshirt-crew', label: 'Giyim', color: '#9C27B0' },
+  { id: 'health', icon: 'medical-bag', label: 'Sağlık', color: '#F44336' },
+  { id: 'books', icon: 'book-open-page-variant', label: 'Kitap/Kırtasiye', color: '#FF9800' },
+  { id: 'electronics', icon: 'laptop', label: 'Elektronik', color: '#607D8B' },
+  { id: 'hobby', icon: 'palette', label: 'Hobi', color: '#795548' },
+];
 
 const CreateListScreen = ({ navigation }) => {
   const [listTitle, setListTitle] = useState('');
   const [note, setNote] = useState('');
+  const [selectedTag, setSelectedTag] = useState(null);
   const [error, setError] = useState('');
 
   const handleCreateList = async () => {
@@ -14,17 +27,24 @@ const CreateListScreen = ({ navigation }) => {
       return;
     }
 
+    if (!selectedTag) {
+      setError('Please select a category');
+      return;
+    }
+
     try {
       const newList = await saveList({
         title: listTitle,
         note: note,
         items: [],
+        tag: selectedTag,
       });
 
       navigation.replace('ListDetails', {
         listId: newList.id,
         listTitle: newList.title,
         note: newList.note,
+        tag: newList.tag,
       });
     } catch (err) {
       setError('Failed to create list. Please try again.');
@@ -59,6 +79,37 @@ const CreateListScreen = ({ navigation }) => {
             outlineColor="#E6A4B4"
             activeOutlineColor="#E6A4B4"
           />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Category</Text>
+          <View style={styles.tagsContainer}>
+            {TAGS.map((tag) => (
+              <TouchableOpacity
+                key={tag.id}
+                style={[
+                  styles.tagButton,
+                  selectedTag?.id === tag.id && styles.selectedTagButton,
+                  { borderColor: tag.color }
+                ]}
+                onPress={() => setSelectedTag(tag)}
+              >
+                <MaterialCommunityIcons
+                  name={tag.icon}
+                  size={24}
+                  color={selectedTag?.id === tag.id ? '#FFF8E3' : tag.color}
+                  style={styles.tagIcon}
+                />
+                <Text style={[
+                  styles.tagLabel,
+                  selectedTag?.id === tag.id && styles.selectedTagLabel,
+                  { color: selectedTag?.id === tag.id ? '#FFF8E3' : tag.color }
+                ]}>
+                  {tag.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
 
         <View style={styles.inputContainer}>
@@ -140,7 +191,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 12,
     color: '#333',
   },
   input: {
@@ -149,6 +200,37 @@ const styles = StyleSheet.create({
   },
   noteInput: {
     height: 120,
+  },
+  tagsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 4,
+  },
+  tagButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF8E3',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    minWidth: '45%',
+    maxWidth: '45%',
+  },
+  selectedTagButton: {
+    backgroundColor: '#E6A4B4',
+    borderColor: '#E6A4B4',
+  },
+  tagIcon: {
+    marginRight: 8,
+  },
+  tagLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  selectedTagLabel: {
+    color: '#FFF8E3',
   },
   createButton: {
     marginTop: 20,
