@@ -90,7 +90,7 @@ export default function App() {
             name="Home" 
             component={HomeStack}
             options={{
-              title: 'ShopList',
+              title: 'My Shopping List',
               headerShown: false,
             }}
           />

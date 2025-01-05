@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
-import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu } from 'react-native-paper';
+import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu, Dialog, Button } from 'react-native-paper';
 import { getLists, deleteList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -68,6 +68,30 @@ const TAG_THEMES = {
     surface: '#FFFFFF',
     border: 'rgba(121, 85, 72, 0.12)',
   },
+  sports: {
+    primary: '#00BCD4',
+    pastel: '#F7F9FA',
+    surface: '#FFFFFF',
+    border: 'rgba(0, 188, 212, 0.12)',
+  },
+  kids: {
+    primary: '#8BC34A',
+    pastel: '#F8F9F7',
+    surface: '#FFFFFF',
+    border: 'rgba(139, 195, 74, 0.12)',
+  },
+  pets: {
+    primary: '#FF5722',
+    pastel: '#F9F8F7',
+    surface: '#FFFFFF',
+    border: 'rgba(255, 87, 34, 0.12)',
+  },
+  garden: {
+    primary: '#009688',
+    pastel: '#F7F9F8',
+    surface: '#FFFFFF',
+    border: 'rgba(0, 150, 136, 0.12)',
+  },
 };
 
 const DEFAULT_THEME = {
@@ -100,6 +124,8 @@ const HomeScreen = ({ navigation }) => {
   const [sortMenuVisible, setSortMenuVisible] = useState(false);
   const [sortBy, setSortBy] = useState('date');
   const [selectedTag, setSelectedTag] = useState(null);
+  const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
+  const [selectedListId, setSelectedListId] = useState(null);
 
   useEffect(() => {
     loadLists();
@@ -168,18 +194,30 @@ const HomeScreen = ({ navigation }) => {
     });
   };
 
+  const showDeleteDialog = (listId) => {
+    setSelectedListId(listId);
+    setDeleteDialogVisible(true);
+  };
+
+  const hideDeleteDialog = () => {
+    setDeleteDialogVisible(false);
+    setSelectedListId(null);
+  };
+
+  const confirmDelete = async () => {
+    if (selectedListId) {
+      await deleteList(selectedListId);
+      loadLists();
+    }
+    hideDeleteDialog();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Shopping Lists</Text>
-        <IconButton
-          icon="bell-outline"
-          size={24}
-          color="#E6A4B4"
-          onPress={() => console.log('Notifications')}
-        />
+        <Text style={styles.headerTitle}>My Shopping Lists</Text>
       </View>
 
       <View style={styles.filterContainer}>
@@ -188,8 +226,13 @@ const HomeScreen = ({ navigation }) => {
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={styles.searchBar}
-          inputStyle={styles.searchInput}
-          iconColor="#E6A4B4"
+          theme={{
+            colors: {
+              onSurfaceVariant: '#E6A4B4'
+            }
+          }}
+          placeholderTextColor="#999"
+          inputStyle={{ paddingBottom: 11 }}
         />
         <Menu
           visible={sortMenuVisible}
@@ -326,7 +369,7 @@ const HomeScreen = ({ navigation }) => {
                     <IconButton
                       icon="delete-outline"
                       size={24}
-                      onPress={() => handleDeleteList(list.id)}
+                      onPress={() => showDeleteDialog(list.id)}
                       style={styles.optionsButton}
                     />
                   </View>
@@ -351,6 +394,17 @@ const HomeScreen = ({ navigation }) => {
           })
         )}
       </ScrollView>
+
+      <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
+        <Dialog.Title style={styles.dialogTitle}>Delete List</Dialog.Title>
+        <Dialog.Content>
+          <Text style={styles.dialogContent}>Are you sure you want to delete this list?</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={hideDeleteDialog} textColor="#666">Cancel</Button>
+          <Button onPress={confirmDelete} textColor="#E6A4B4">Delete</Button>
+        </Dialog.Actions>
+      </Dialog>
 
       <FAB
         icon="plus"
@@ -395,6 +449,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 0,
     height: 46,
+    paddingHorizontal: 4,
   },
   searchInput: {
     fontSize: 16,
@@ -548,6 +603,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 40,
     lineHeight: 22,
+  },
+  dialogTitle: {
+    color: '#333',
+    fontSize: 20,
+  },
+  dialogContent: {
+    color: '#666',
+    fontSize: 16,
   },
 });
 

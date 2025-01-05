@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "shoplist",
-    "slug": "shoplist",
+    "name": "Dobydoby: My Shopping List",
+    "slug": "dobydoby-my-shopping-list",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ios/iTunesArtwork@3x.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -13,16 +13,36 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+      "supportsTablet": true,
+      "bundleIdentifier": "com.dobydoby.shoppinglist",
+      "buildNumber": "1.0.0",
+      "icon": "./assets/ios/iTunesArtwork@3x.png",
+      "requireFullScreen": true,
+      "icons": {
+        "app": {
+          "ios": "./assets/ios/iTunesArtwork@3x.png"
+        }
       }
     },
+    "android": {
+      "package": "com.dobydoby.shoppinglist",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android/playstore-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "icon": "./assets/android/playstore-icon.png"
+    },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/web/favicon.ico",
+      "icons": {
+        "favicon": "./assets/web/favicon.ico",
+        "favicon16": "./assets/web/favicon-16x16.png",
+        "favicon32": "./assets/web/favicon-32x32.png",
+        "chrome192": "./assets/web/android-chrome-192x192.png",
+        "chrome512": "./assets/web/android-chrome-512x512.png",
+        "appleTouchIcon": "./assets/web/apple-touch-icon.png"
+      }
     }
   }
 }

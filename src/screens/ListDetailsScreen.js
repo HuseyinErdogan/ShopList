@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, Platform, Image } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, Platform, Image, Clipboard } from 'react-native';
 import { Text, IconButton, FAB, Card, Portal, Modal, TextInput, Button, Chip, Searchbar } from 'react-native-paper';
 import { getListItems, updateListItems } from '../utils/storage';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
@@ -186,6 +186,30 @@ const TAG_THEMES = {
     pastel: '#F8F7F6',
     surface: '#FFFFFF',
     border: 'rgba(121, 85, 72, 0.12)',
+  },
+  sports: {
+    primary: '#00BCD4',
+    pastel: '#F7F9FA',
+    surface: '#FFFFFF',
+    border: 'rgba(0, 188, 212, 0.12)',
+  },
+  kids: {
+    primary: '#8BC34A',
+    pastel: '#F8F9F7',
+    surface: '#FFFFFF',
+    border: 'rgba(139, 195, 74, 0.12)',
+  },
+  pets: {
+    primary: '#FF5722',
+    pastel: '#F9F8F7',
+    surface: '#FFFFFF',
+    border: 'rgba(255, 87, 34, 0.12)',
+  },
+  garden: {
+    primary: '#009688',
+    pastel: '#F7F9F8',
+    surface: '#FFFFFF',
+    border: 'rgba(0, 150, 136, 0.12)',
   },
 };
 
@@ -607,6 +631,43 @@ const ListDetailsScreen = ({ route, navigation }) => {
     );
   };
 
+  const handleShare = async () => {
+    let shareText = `📝 ${listTitle}\n`;
+    if (note) {
+      shareText += `📌 ${note}\n`;
+    }
+    shareText += `\n`;
+
+    const itemsByCategory = {};
+    
+    items.forEach(item => {
+      const subTagInfo = item.subTag && SUB_TAGS[tag?.id]?.find(st => st.id === item.subTag);
+      const category = subTagInfo ? subTagInfo.label : 'Other';
+      
+      if (!itemsByCategory[category]) {
+        itemsByCategory[category] = [];
+      }
+      
+      itemsByCategory[category].push(
+        `${item.checked ? '✓' : '○'} ${item.name} (${item.quantity})${item.description ? ` - ${item.description}` : ''}`
+      );
+    });
+
+    Object.entries(itemsByCategory).forEach(([category, categoryItems]) => {
+      shareText += `\n📑 ${category}\n`;
+      categoryItems.forEach(item => {
+        shareText += `${item}\n`;
+      });
+    });
+
+    try {
+      await Clipboard.setString(shareText);
+      alert('List copied to clipboard!');
+    } catch (error) {
+      alert('Failed to copy list to clipboard');
+    }
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.pastel }]}>
       <View style={[styles.header, { backgroundColor: theme.pastel }]}>
@@ -632,10 +693,10 @@ const ListDetailsScreen = ({ route, navigation }) => {
           </View>
         </View>
         <IconButton
-          icon="share-variant-outline"
+          icon="content-copy"
           size={24}
           color="#333"
-          onPress={() => console.log('Share')}
+          onPress={handleShare}
         />
       </View>
 
