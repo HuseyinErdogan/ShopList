@@ -1,19 +1,58 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { TextInput, Button, Text, IconButton, Snackbar } from 'react-native-paper';
 import { saveList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const GRID_PADDING = 20;
+const GRID_SPACING = 12;
+const BUTTON_WIDTH = (SCREEN_WIDTH - (GRID_PADDING * 2) - GRID_SPACING) / 2;
+
 const TAGS = [
-  { id: 'grocery', icon: 'cart', label: 'Market', color: '#4CAF50' },
-  { id: 'home', icon: 'home', label: 'Ev', color: '#2196F3' },
-  { id: 'gift', icon: 'gift', label: 'Hediye', color: '#E91E63' },
-  { id: 'clothing', icon: 'tshirt-crew', label: 'Giyim', color: '#9C27B0' },
-  { id: 'health', icon: 'medical-bag', label: 'Sağlık', color: '#F44336' },
-  { id: 'books', icon: 'book-open-page-variant', label: 'Kitap/Kırtasiye', color: '#FF9800' },
-  { id: 'electronics', icon: 'laptop', label: 'Elektronik', color: '#607D8B' },
-  { id: 'hobby', icon: 'palette', label: 'Hobi', color: '#795548' },
+  { id: 'grocery', icon: 'cart', label: 'Groceries', color: '#4CAF50' },
+  { id: 'home', icon: 'home', label: 'Home & Living', color: '#2196F3' },
+  { id: 'gift', icon: 'gift', label: 'Gifts', color: '#E91E63' },
+  { id: 'clothing', icon: 'tshirt-crew', label: 'Fashion', color: '#9C27B0' },
+  { id: 'health', icon: 'medical-bag', label: 'Health & Beauty', color: '#F44336' },
+  { id: 'books', icon: 'book-open-page-variant', label: 'Books & Stationery', color: '#FF9800' },
+  { id: 'electronics', icon: 'laptop', label: 'Electronics', color: '#607D8B' },
+  { id: 'hobby', icon: 'palette', label: 'Hobbies', color: '#795548' },
+  { id: 'sports', icon: 'basketball', label: 'Sports', color: '#00BCD4' },
+  { id: 'kids', icon: 'baby-face', label: 'Kids & Toys', color: '#8BC34A' },
+  { id: 'pets', icon: 'paw', label: 'Pet Supplies', color: '#FF5722' },
+  { id: 'garden', icon: 'flower', label: 'Garden & Outdoor', color: '#009688' },
 ];
+
+const CategoryButton = ({ tag, isSelected, onPress }) => (
+  <TouchableOpacity
+    style={[
+      styles.tagButton,
+      isSelected && styles.selectedTagButton,
+      { borderColor: tag.color },
+      isSelected && { backgroundColor: tag.color }
+    ]}
+    onPress={onPress}
+  >
+    <MaterialCommunityIcons
+      name={tag.icon}
+      size={22}
+      color={isSelected ? '#FFF8E3' : tag.color}
+      style={styles.tagIcon}
+    />
+    <Text 
+      style={[
+        styles.tagLabel,
+        isSelected && styles.selectedTagLabel,
+        { color: isSelected ? '#FFF8E3' : tag.color }
+      ]}
+      numberOfLines={1}
+      ellipsizeMode="tail"
+    >
+      {tag.label}
+    </Text>
+  </TouchableOpacity>
+);
 
 const CreateListScreen = ({ navigation }) => {
   const [listTitle, setListTitle] = useState('');
@@ -79,29 +118,12 @@ const CreateListScreen = ({ navigation }) => {
           <Text style={styles.label}>Category (Optional)</Text>
           <View style={styles.tagsContainer}>
             {TAGS.map((tag) => (
-              <TouchableOpacity
+              <CategoryButton
                 key={tag.id}
-                style={[
-                  styles.tagButton,
-                  selectedTag?.id === tag.id && styles.selectedTagButton,
-                  { borderColor: tag.color }
-                ]}
+                tag={tag}
+                isSelected={selectedTag?.id === tag.id}
                 onPress={() => setSelectedTag(tag)}
-              >
-                <MaterialCommunityIcons
-                  name={tag.icon}
-                  size={24}
-                  color={selectedTag?.id === tag.id ? '#FFF8E3' : tag.color}
-                  style={styles.tagIcon}
-                />
-                <Text style={[
-                  styles.tagLabel,
-                  selectedTag?.id === tag.id && styles.selectedTagLabel,
-                  { color: selectedTag?.id === tag.id ? '#FFF8E3' : tag.color }
-                ]}>
-                  {tag.label}
-                </Text>
-              </TouchableOpacity>
+              />
             ))}
           </View>
         </View>
@@ -170,7 +192,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    padding: 20,
+    padding: GRID_PADDING,
   },
   inputContainer: {
     marginBottom: 24,
@@ -194,19 +216,19 @@ const styles = StyleSheet.create({
   tagsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    justifyContent: 'space-between',
     marginTop: 4,
   },
   tagButton: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFF8E3',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
-    minWidth: '45%',
-    maxWidth: '45%',
+    width: BUTTON_WIDTH,
+    marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -217,15 +239,16 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   selectedTagButton: {
-    backgroundColor: '#E6A4B4',
-    borderColor: '#E6A4B4',
+    borderColor: 'transparent',
   },
   tagIcon: {
     marginRight: 8,
+    width: 22,
   },
   tagLabel: {
     fontSize: 14,
     fontWeight: '500',
+    flex: 1,
   },
   selectedTagLabel: {
     color: '#FFF8E3',

@@ -5,14 +5,18 @@ import { getLists, deleteList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const TAGS = [
-  { id: 'grocery', icon: 'cart', label: 'Market', color: '#4CAF50' },
-  { id: 'home', icon: 'home', label: 'Ev', color: '#2196F3' },
-  { id: 'gift', icon: 'gift', label: 'Hediye', color: '#E91E63' },
-  { id: 'clothing', icon: 'tshirt-crew', label: 'Giyim', color: '#9C27B0' },
-  { id: 'health', icon: 'medical-bag', label: 'Sağlık', color: '#F44336' },
-  { id: 'books', icon: 'book-open-page-variant', label: 'Kitap/Kırtasiye', color: '#FF9800' },
-  { id: 'electronics', icon: 'laptop', label: 'Elektronik', color: '#607D8B' },
-  { id: 'hobby', icon: 'palette', label: 'Hobi', color: '#795548' },
+  { id: 'grocery', icon: 'cart', label: 'Groceries', color: '#4CAF50' },
+  { id: 'home', icon: 'home', label: 'Home & Living', color: '#2196F3' },
+  { id: 'gift', icon: 'gift', label: 'Gifts', color: '#E91E63' },
+  { id: 'clothing', icon: 'tshirt-crew', label: 'Fashion', color: '#9C27B0' },
+  { id: 'health', icon: 'medical-bag', label: 'Health & Beauty', color: '#F44336' },
+  { id: 'books', icon: 'book-open-page-variant', label: 'Books & Stationery', color: '#FF9800' },
+  { id: 'electronics', icon: 'laptop', label: 'Electronics', color: '#607D8B' },
+  { id: 'hobby', icon: 'palette', label: 'Hobbies', color: '#795548' },
+  { id: 'sports', icon: 'basketball', label: 'Sports', color: '#00BCD4' },
+  { id: 'kids', icon: 'baby-face', label: 'Kids & Toys', color: '#8BC34A' },
+  { id: 'pets', icon: 'paw', label: 'Pet Supplies', color: '#FF5722' },
+  { id: 'garden', icon: 'flower', label: 'Garden & Outdoor', color: '#009688' },
 ];
 
 const TAG_THEMES = {
