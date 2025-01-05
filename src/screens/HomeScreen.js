@@ -227,7 +227,8 @@ const HomeScreen = ({ navigation }) => {
         <TouchableOpacity
           style={[
             styles.tagChip,
-            !selectedTag && styles.selectedTagChip
+            !selectedTag && [styles.selectedTagChip, { backgroundColor: '#E6A4B4' }],
+            { borderColor: '#E6A4B4' }
           ]}
           onPress={() => setSelectedTag(null)}
         >
@@ -238,7 +239,8 @@ const HomeScreen = ({ navigation }) => {
           />
           <Text style={[
             styles.tagChipText,
-            !selectedTag && styles.selectedTagChipText
+            !selectedTag && styles.selectedTagChipText,
+            { color: !selectedTag ? '#FFF8E3' : '#E6A4B4' }
           ]}>
             All
           </Text>
@@ -248,7 +250,7 @@ const HomeScreen = ({ navigation }) => {
             key={tag.id}
             style={[
               styles.tagChip,
-              selectedTag === tag.id && styles.selectedTagChip,
+              selectedTag === tag.id && [styles.selectedTagChip, { backgroundColor: tag.color }],
               { borderColor: tag.color }
             ]}
             onPress={() => setSelectedTag(tag.id)}
@@ -418,8 +420,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   selectedTagChip: {
-    backgroundColor: '#E6A4B4',
-    borderColor: '#E6A4B4',
+    borderColor: 'transparent',
   },
   tagChipText: {
     fontSize: 14,

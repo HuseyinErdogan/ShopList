@@ -27,17 +27,12 @@ const CreateListScreen = ({ navigation }) => {
       return;
     }
 
-    if (!selectedTag) {
-      setError('Please select a category');
-      return;
-    }
-
     try {
       const newList = await saveList({
         title: listTitle,
         note: note,
         items: [],
-        tag: selectedTag,
+        tag: selectedTag || null,
       });
 
       navigation.replace('ListDetails', {
@@ -53,17 +48,16 @@ const CreateListScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <View style={styles.headerContent}>
-          <IconButton
-            icon="arrow-left"
-            size={24}
-            color="#FFF8E3"
-            onPress={() => navigation.goBack()}
-          />
-          <Text style={styles.header}>Create New List</Text>
-          <View style={{ width: 40 }} />
-        </View>
+      <View style={styles.header}>
+        <IconButton
+          icon="arrow-left"
+          size={24}
+          color="#333"
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        />
+        <Text style={styles.headerTitle}>Create New List</Text>
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
@@ -82,7 +76,7 @@ const CreateListScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Category</Text>
+          <Text style={styles.label}>Category (Optional)</Text>
           <View style={styles.tagsContainer}>
             {TAGS.map((tag) => (
               <TouchableOpacity
@@ -155,51 +149,47 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5EEE6',
   },
-  headerContainer: {
-    backgroundColor: '#E6A4B4',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    paddingVertical: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  headerContent: {
+  header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 8,
+    paddingTop: 20,
+    paddingBottom: 10,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF8E3',
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#333',
+    letterSpacing: 0.5,
     textAlign: 'center',
+  },
+  backButton: {
+    backgroundColor: '#FFF8E3',
+    borderRadius: 12,
   },
   formContainer: {
     flex: 1,
     padding: 20,
   },
   inputContainer: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 12,
     color: '#333',
+    letterSpacing: 0.3,
   },
   input: {
     backgroundColor: '#FFF8E3',
     fontSize: 16,
+    borderRadius: 12,
   },
   noteInput: {
     height: 120,
+    textAlignVertical: 'top',
   },
   tagsContainer: {
     flexDirection: 'row',
@@ -211,12 +201,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFF8E3',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 12,
     borderWidth: 1,
     minWidth: '45%',
     maxWidth: '45%',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   selectedTagButton: {
     backgroundColor: '#E6A4B4',
@@ -233,15 +231,25 @@ const styles = StyleSheet.create({
     color: '#FFF8E3',
   },
   createButton: {
-    marginTop: 20,
+    marginTop: 12,
+    marginBottom: 32,
     backgroundColor: '#E6A4B4',
     paddingVertical: 8,
     borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
   buttonLabel: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#FFF8E3',
+    letterSpacing: 0.5,
   },
   snackbar: {
     backgroundColor: '#E6A4B4',
