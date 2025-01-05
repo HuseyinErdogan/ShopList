@@ -15,18 +15,10 @@ const CreateListScreen = ({ navigation }) => {
     }
 
     try {
-      const defaultItems = [
-        { id: Date.now() + 1, name: 'Milk', checked: false, quantity: '1L' },
-        { id: Date.now() + 2, name: 'Bread', checked: false, quantity: '2 pcs' },
-        { id: Date.now() + 3, name: 'Eggs', checked: false, quantity: '12 pcs' },
-        { id: Date.now() + 4, name: 'Cheese', checked: false, quantity: '200g' },
-        { id: Date.now() + 5, name: 'Tomatoes', checked: false, quantity: '500g' },
-      ];
-
       const newList = await saveList({
         title: listTitle,
         note: note,
-        items: defaultItems,
+        items: [],
       });
 
       navigation.replace('ListDetails', {

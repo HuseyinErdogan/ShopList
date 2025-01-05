@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, Platform, Image } from 'react-native';
 import { Text, IconButton, FAB, Card, Portal, Modal, TextInput, Button } from 'react-native-paper';
 import { getListItems, updateListItems } from '../utils/storage';
@@ -10,6 +10,7 @@ import Animated, {
   withSpring,
   interpolateColor,
 } from 'react-native-reanimated';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const ITEM_WIDTH = 80;
 const SCREEN_WIDTH = Dimensions.get('window').width;
@@ -58,27 +59,204 @@ const CustomCheckbox = ({ checked, onPress }) => {
   );
 };
 
-const ListDetailsScreen = ({ route, navigation }) => {
-  const { listId, listTitle, note } = route.params;
-  const [items, setItems] = useState([]);
-  const [visible, setVisible] = useState(false);
-  const [newItemName, setNewItemName] = useState('');
-  const [quantity, setQuantity] = useState('1');
-  const [unit, setUnit] = useState('pcs');
-  const [selectedImage, setSelectedImage] = useState(null);
-  const [description, setDescription] = useState('');
-  const scrollViewRef = useRef(null);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
-  const [editingItem, setEditingItem] = useState(null);
+const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null }) => {
+  const [formData, setFormData] = useState({
+    name: editingItem?.name || '',
+    quantity: editingItem?.quantity?.split(' ')[0] || '1',
+    unit: editingItem?.quantity?.split(' ')[1] || 'pcs',
+    image: editingItem?.image || null,
+    description: editingItem?.description || ''
+  });
+
+  const handleChange = useCallback((field, value) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  }, []);
+
+  const handleSubmit = useCallback(() => {
+    if (!formData.name.trim()) return;
+
+    const item = {
+      id: editingItem?.id || Date.now().toString(),
+      name: formData.name.trim(),
+      quantity: `${formData.quantity} ${formData.unit}`,
+      checked: editingItem?.checked || false,
+      image: formData.image,
+      description: formData.description.trim()
+    };
+
+    onSubmit(item);
+  }, [formData, editingItem, onSubmit]);
+
+  const handleImagePick = useCallback(async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      handleChange('image', result.assets[0].uri);
+    }
+  }, []);
 
   const units = [
     { label: 'pcs', value: 'pcs' },
     { label: 'kg', value: 'kg' },
     { label: 'g', value: 'g' },
     { label: 'L', value: 'L' },
-    { label: 'ml', value: 'ml' },
+    { label: 'ml', value: 'ml' }
   ];
+
+  return (
+    <View style={styles.modalContent}>
+      <View style={styles.modalHeader}>
+        <Text style={styles.modalTitle}>
+          {editingItem ? 'Edit Item' : 'Add New Item'}
+        </Text>
+        <IconButton
+          icon="close"
+          size={24}
+          iconColor="#666"
+          onPress={onClose}
+        />
+      </View>
+
+      <View style={styles.formContainer}>
+        <TouchableOpacity 
+          style={styles.imagePickerButton} 
+          onPress={handleImagePick}
+        >
+          {formData.image ? (
+            <Image 
+              source={{ uri: formData.image }} 
+              style={styles.selectedImage} 
+            />
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <IconButton 
+                icon="camera" 
+                size={24} 
+                color="#E6A4B4"
+                style={{ margin: 0 }}
+              />
+              <Text style={styles.imagePlaceholderText}>Add Photo</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Item Name</Text>
+          <TextInput
+            value={formData.name}
+            onChangeText={(value) => handleChange('name', value)}
+            style={styles.input}
+            placeholder="Enter item name"
+            placeholderTextColor="#999"
+            mode="outlined"
+            outlineColor="#E6A4B4"
+            activeOutlineColor="#E6A4B4"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Quantity</Text>
+          <View style={styles.quantityRow}>
+            <TextInput
+              value={formData.quantity}
+              onChangeText={(value) => handleChange('quantity', value)}
+              style={[styles.input, { flex: 0.4 }]}
+              placeholder="Enter quantity"
+              placeholderTextColor="#999"
+              mode="outlined"
+              outlineColor="#E6A4B4"
+              activeOutlineColor="#E6A4B4"
+              keyboardType="numeric"
+            />
+            <View style={styles.unitSelector}>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.unitSelectorScroll}
+              >
+                {units.map((unit) => (
+                  <TouchableOpacity
+                    key={unit.value}
+                    style={[
+                      styles.unitButton,
+                      formData.unit === unit.value && styles.selectedUnitButton
+                    ]}
+                    onPress={() => handleChange('unit', unit.value)}
+                  >
+                    <Text style={[
+                      styles.unitButtonText,
+                      formData.unit === unit.value && styles.selectedUnitButtonText
+                    ]}>
+                      {unit.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Description (Optional)</Text>
+          <TextInput
+            value={formData.description}
+            onChangeText={(value) => handleChange('description', value)}
+            style={[styles.input, styles.descriptionInput]}
+            placeholder="Add a description"
+            placeholderTextColor="#999"
+            mode="outlined"
+            outlineColor="#E6A4B4"
+            activeOutlineColor="#E6A4B4"
+            multiline
+            numberOfLines={3}
+          />
+        </View>
+      </View>
+
+      <View style={styles.modalFooter}>
+        <Button
+          mode="contained"
+          onPress={handleSubmit}
+          style={styles.submitButton}
+          buttonColor="#E6A4B4"
+          textColor="#FFF8E3"
+        >
+          {editingItem ? 'Save Changes' : 'Add Item'}
+        </Button>
+      </View>
+    </View>
+  );
+});
+
+const EmptyState = () => (
+  <View style={styles.emptyStateContainer}>
+    <MaterialCommunityIcons name="cart-outline" size={120} color="#E6A4B4" />
+    <Text style={styles.emptyStateTitle}>Your shopping list is empty</Text>
+    <Text style={styles.emptyStateSubtitle}>Add some items to get started!</Text>
+  </View>
+);
+
+const ListDetailsScreen = ({ route, navigation }) => {
+  const { listId, listTitle, note } = route.params;
+  const [items, setItems] = useState([]);
+  const [visible, setVisible] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [detailsModalVisible, setDetailsModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     loadItems();
@@ -97,95 +275,16 @@ const ListDetailsScreen = ({ route, navigation }) => {
     await updateListItems(listId, updatedItems);
   };
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setSelectedImage(result.assets[0].uri);
-    }
-  };
-
-  const addItem = async () => {
-    if (!newItemName.trim()) return;
-
-    const newItem = {
-      id: Date.now().toString(),
-      name: newItemName.trim(),
-      quantity: `${quantity} ${unit}`,
-      checked: false,
-      image: selectedImage,
-      description: description.trim(),
-    };
-
-    const updatedItems = [...items, newItem];
+  const handleSubmitItem = async (item) => {
+    const updatedItems = editingItem 
+      ? items.map(i => i.id === item.id ? item : i)
+      : [...items, item];
+    
     setItems(updatedItems);
     await updateListItems(listId, updatedItems);
-
-    setNewItemName('');
-    setQuantity('1');
-    setUnit('pcs');
-    setSelectedImage(null);
-    setDescription('');
     setVisible(false);
+    setEditingItem(null);
   };
-
-  const handleUnitSelect = (selectedUnit, index) => {
-    setUnit(selectedUnit);
-    const offset = index * (ITEM_WIDTH + ITEM_SPACING * 2) - (SCREEN_WIDTH - ITEM_WIDTH) / 2 + CONTAINER_PADDING;
-    scrollViewRef.current?.scrollTo({ x: offset, animated: true });
-  };
-
-  const renderUnitSelector = () => (
-    <View style={styles.unitSelectorWrapper}>
-      <ScrollView 
-        ref={scrollViewRef}
-        horizontal 
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.unitSelectorContainer,
-          Platform.OS === 'android' && { paddingHorizontal: (SCREEN_WIDTH - ITEM_WIDTH) / 2 }
-        ]}
-        snapToInterval={ITEM_WIDTH + ITEM_SPACING * 2}
-        decelerationRate="fast"
-        {...(Platform.OS === 'ios' ? {
-          contentInset: {
-            left: (SCREEN_WIDTH - ITEM_WIDTH) / 2 - CONTAINER_PADDING,
-            right: (SCREEN_WIDTH - ITEM_WIDTH) / 2 - CONTAINER_PADDING,
-          },
-          contentOffset: { x: 0, y: 0 }
-        } : {})}
-      >
-        {units.map((unitItem, index) => (
-          <TouchableOpacity
-            key={unitItem.value}
-            style={[
-              styles.unitItem,
-              unit === unitItem.value && styles.selectedUnitItem
-            ]}
-            onPress={() => handleUnitSelect(unitItem.value, index)}
-          >
-            <Text style={[
-              styles.unitText,
-              unit === unitItem.value && styles.selectedUnitText
-            ]}>
-              {unitItem.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  );
 
   const deleteItem = async (id) => {
     const updatedItems = items.filter(item => item.id !== id);
@@ -195,39 +294,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
 
   const startEditing = (item) => {
     setEditingItem(item);
-    setNewItemName(item.name);
-    const [qty, unt] = item.quantity.split(' ');
-    setQuantity(qty);
-    setUnit(unt);
-    setSelectedImage(item.image);
-    setDescription(item.description || '');
     setVisible(true);
-  };
-
-  const editItem = async () => {
-    if (!newItemName.trim() || !editingItem) return;
-
-    const updatedItems = items.map(item => 
-      item.id === editingItem.id 
-        ? {
-            ...item,
-            name: newItemName.trim(),
-            quantity: `${quantity} ${unit}`,
-            image: selectedImage || item.image,
-            description: description.trim(),
-          }
-        : item
-    );
-
-    setItems(updatedItems);
-    await updateListItems(listId, updatedItems);
-    setEditingItem(null);
-    setNewItemName('');
-    setQuantity('1');
-    setUnit('pcs');
-    setSelectedImage(null);
-    setDescription('');
-    setVisible(false);
   };
 
   const showItemDetails = (item) => {
@@ -238,18 +305,26 @@ const ListDetailsScreen = ({ route, navigation }) => {
   const renderRightActions = (progress, dragX, item) => {
     return (
       <View style={styles.swipeActionsContainer}>
-        <View style={styles.swipeAction}>
-          <TouchableOpacity 
-            onPress={() => startEditing(item)}
-            style={[styles.actionButton, styles.editButton]}>
-            <IconButton icon="pencil" size={20} color="#FFF8E3" />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            onPress={() => deleteItem(item.id)}
-            style={[styles.actionButton, styles.deleteButton]}>
-            <IconButton icon="delete" size={20} color="#FFF8E3" />
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity 
+          onPress={() => startEditing(item)}
+          style={[styles.actionButton, styles.editButton]}>
+          <IconButton 
+            icon="pencil" 
+            size={24} 
+            iconColor="#FFF8E3" 
+            style={{ margin: 0, width: 56, height: 56 }} 
+          />
+        </TouchableOpacity>
+        <TouchableOpacity 
+          onPress={() => deleteItem(item.id)}
+          style={[styles.actionButton, styles.deleteButton]}>
+          <IconButton 
+            icon="delete" 
+            size={24} 
+            iconColor="#FFF8E3" 
+            style={{ margin: 0, width: 56, height: 56 }} 
+          />
+        </TouchableOpacity>
       </View>
     );
   };
@@ -277,145 +352,23 @@ const ListDetailsScreen = ({ route, navigation }) => {
         )}
       </View>
 
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        {items.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No items in this list</Text>
-            <Text style={styles.emptySubText}>Add your first item by tapping the + button</Text>
-          </View>
-        ) : (
-          <ScrollView style={styles.listContainer}>
-            {items.map((item) => (
-              <Swipeable
-                key={item.id}
-                renderRightActions={(progress, dragX) => 
-                  renderRightActions(progress, dragX, item)
-                }
-                rightThreshold={40}
-                friction={2}
-                overshootRight={false}>
-                <TouchableOpacity
-                  onPress={() => showItemDetails(item)}>
-                  <Card style={styles.itemCard}>
-                    <Card.Content style={styles.itemContent}>
-                      <View style={styles.itemLeft}>
-                        <CustomCheckbox
-                          checked={item.checked}
-                          onPress={() => toggleItem(item.id)}
-                        />
-                        {item.image && (
-                          <Image 
-                            source={{ uri: item.image }} 
-                            style={styles.itemImage} 
-                          />
-                        )}
-                        <View style={styles.itemTextContainer}>
-                          <Text style={[
-                            styles.itemName,
-                            item.checked && styles.checkedItem
-                          ]}>{item.name}</Text>
-                          {item.description ? (
-                            <Text style={styles.itemDescription} numberOfLines={1}>
-                              {item.description}
-                            </Text>
-                          ) : null}
-                        </View>
-                      </View>
-                      <Text style={styles.quantity}>{item.quantity}</Text>
-                    </Card.Content>
-                  </Card>
-                </TouchableOpacity>
-              </Swipeable>
-            ))}
-          </ScrollView>
-        )}
-      </GestureHandlerRootView>
-
       <Portal>
         <Modal
           visible={visible}
           onDismiss={() => {
             setVisible(false);
             setEditingItem(null);
-            setNewItemName('');
-            setQuantity('1');
-            setUnit('pcs');
-            setSelectedImage(null);
-            setDescription('');
           }}
           contentContainerStyle={styles.modalContainer}>
           <ScrollView>
-            <Text style={styles.modalTitle}>
-              {editingItem ? 'Edit Item' : 'Add New Item'}
-            </Text>
-            <TouchableOpacity 
-              style={styles.imagePickerButton} 
-              onPress={pickImage}
-            >
-              {selectedImage ? (
-                <Image 
-                  source={{ uri: selectedImage }} 
-                  style={styles.selectedImage} 
-                />
-              ) : (
-                <View style={styles.imagePlaceholder}>
-                  <IconButton icon="camera" size={24} color="#E6A4B4" />
-                  <Text style={styles.imagePlaceholderText}>Add Photo</Text>
-                </View>
-              )}
-            </TouchableOpacity>
-            <TextInput
-              label="Item Name"
-              value={newItemName}
-              onChangeText={setNewItemName}
-              style={styles.input}
-              mode="outlined"
+            <AddItemForm
+              onSubmit={handleSubmitItem}
+              onClose={() => {
+                setVisible(false);
+                setEditingItem(null);
+              }}
+              editingItem={editingItem}
             />
-            <View style={styles.quantityContainer}>
-              <Text style={styles.inputLabel}>Quantity</Text>
-              <TextInput
-                value={quantity}
-                onChangeText={setQuantity}
-                style={styles.quantityInput}
-                mode="outlined"
-                keyboardType="numeric"
-              />
-              {renderUnitSelector()}
-            </View>
-            <TextInput
-              label="Description (Optional)"
-              value={description}
-              onChangeText={setDescription}
-              style={[styles.input, styles.descriptionInput]}
-              mode="outlined"
-              multiline
-              numberOfLines={3}
-            />
-            <View style={styles.modalActions}>
-              <Button
-                mode="outlined"
-                onPress={() => {
-                  setVisible(false);
-                  setEditingItem(null);
-                  setNewItemName('');
-                  setQuantity('1');
-                  setUnit('pcs');
-                  setSelectedImage(null);
-                  setDescription('');
-                }}
-                style={styles.modalButton}
-                textColor="#E6A4B4">
-                Cancel
-              </Button>
-              <Button
-                mode="contained"
-                onPress={editingItem ? editItem : addItem}
-                style={[styles.modalButton, styles.addButton]}
-                buttonColor="#E6A4B4"
-                textColor="#FFF8E3">
-                {editingItem ? 'Save Changes' : 'Add Item'}
-              </Button>
-            </View>
           </ScrollView>
         </Modal>
       </Portal>
@@ -458,10 +411,61 @@ const ListDetailsScreen = ({ route, navigation }) => {
         </Modal>
       </Portal>
 
+      {items.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <ScrollView style={styles.scrollView}>
+          <GestureHandlerRootView>
+            {items.map((item) => (
+              <Swipeable
+                key={item.id}
+                renderRightActions={(progress, dragX) => renderRightActions(progress, dragX, item)}
+                rightThreshold={40}
+              >
+                <TouchableOpacity
+                  onPress={() => showItemDetails(item)}>
+                  <Card style={styles.itemCard}>
+                    <Card.Content style={styles.itemContent}>
+                      <View style={styles.itemLeft}>
+                        <CustomCheckbox
+                          checked={item.checked}
+                          onPress={() => toggleItem(item.id)}
+                        />
+                        {item.image && (
+                          <Image 
+                            source={{ uri: item.image }} 
+                            style={styles.itemImage} 
+                          />
+                        )}
+                        <View style={styles.itemTextContainer}>
+                          <Text style={[
+                            styles.itemName,
+                            item.checked && styles.checkedItem
+                          ]}>{item.name}</Text>
+                          {item.description ? (
+                            <Text style={styles.itemDescription} numberOfLines={1}>
+                              {item.description}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </View>
+                      <Text style={styles.quantity}>{item.quantity}</Text>
+                    </Card.Content>
+                  </Card>
+                </TouchableOpacity>
+              </Swipeable>
+            ))}
+          </GestureHandlerRootView>
+        </ScrollView>
+      )}
+
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => setVisible(true)}
+        onPress={() => {
+          setEditingItem(null);
+          setVisible(true);
+        }}
         color="#FFF8E3"
       />
     </SafeAreaView>
@@ -472,6 +476,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5EEE6',
+    borderTopWidth: 0,
   },
   headerContainer: {
     backgroundColor: '#E6A4B4',
@@ -518,6 +523,7 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderRadius: 12,
     marginHorizontal: 2,
+    height: 56,
   },
   itemContent: {
     flexDirection: 'row',
@@ -572,113 +578,98 @@ const styles = StyleSheet.create({
   },
   modalContainer: {
     backgroundColor: '#F5EEE6',
-    padding: 20,
     margin: 20,
-    borderRadius: 12,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  modalContent: {
+    flex: 1,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    paddingVertical: 12,
+    backgroundColor: '#FFF8E3',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(230, 164, 180, 0.2)',
   },
   modalTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#333',
-    textAlign: 'center',
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#E6A4B4',
+    letterSpacing: 0.5,
   },
-  input: {
-    marginBottom: 16,
-    backgroundColor: '#FFF8E3',
+  formContainer: {
+    padding: 16,
+    paddingBottom: Platform.OS === 'ios' ? 90 : 80,
+  },
+  inputContainer: {
+    marginBottom: 20,
   },
   inputLabel: {
     fontSize: 16,
-    color: '#666',
+    fontWeight: '500',
+    color: '#333',
     marginBottom: 8,
   },
-  unitSelectorWrapper: {
-    height: 60,
-    justifyContent: 'center',
+  input: {
+    backgroundColor: '#FFF8E3',
+    fontSize: 16,
+    height: 40,
   },
-  unitSelectorContainer: {
-    paddingVertical: 8,
+  quantityRow: {
+    flexDirection: 'row',
     alignItems: 'center',
+    gap: 8,
   },
-  unitItem: {
-    width: ITEM_WIDTH,
-    paddingVertical: 10,
-    marginHorizontal: ITEM_SPACING,
-    borderRadius: 20,
+  unitSelector: {
+    flex: 1,
+    height: 40,
+  },
+  unitSelectorScroll: {
+    flexDirection: 'row',
+    paddingHorizontal: 4,
+  },
+  unitButton: {
+    paddingHorizontal: 16,
+    height: 40,
+    borderRadius: 8,
     backgroundColor: '#FFF8E3',
     borderWidth: 1,
     borderColor: '#E6A4B4',
+    minWidth: 50,
     alignItems: 'center',
     justifyContent: 'center',
+    marginHorizontal: 4,
   },
-  selectedUnitItem: {
+  selectedUnitButton: {
     backgroundColor: '#E6A4B4',
   },
-  unitText: {
-    fontSize: 16,
+  unitButtonText: {
+    fontSize: 14,
     color: '#E6A4B4',
     fontWeight: '500',
   },
-  selectedUnitText: {
+  selectedUnitButtonText: {
     color: '#FFF8E3',
   },
-  quantityContainer: {
-    marginBottom: 24,
-  },
-  quantityInput: {
-    marginBottom: 16,
-    backgroundColor: '#FFF8E3',
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 12,
-  },
-  modalButton: {
-    flex: 1,
-  },
-  addButton: {
-    borderColor: '#E6A4B4',
-  },
-  swipeActionsContainer: {
-    width: 160,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    height: 56,
-    marginBottom: 12,
-    marginLeft: 2,
-  },
-  swipeAction: {
-    flexDirection: 'row',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    gap: 2,
-  },
-  actionButton: {
-    width: 79,
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-  },
-  editButton: {
-    backgroundColor: '#F3D7CA',
-  },
-  deleteButton: {
-    backgroundColor: '#E6A4B4',
+  descriptionInput: {
+    height: 100,
   },
   imagePickerButton: {
-    width: '100%',
-    height: 120,
-    marginBottom: 16,
+    width: '80%',
+    aspectRatio: 1,
+    maxHeight: 200,
+    marginBottom: 20,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#FFF8E3',
     borderWidth: 1,
     borderColor: '#E6A4B4',
     borderStyle: 'dashed',
+    alignSelf: 'center',
   },
   selectedImage: {
     width: '100%',
@@ -689,31 +680,47 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#FFF8E3',
+    width: '100%',
+    gap: 4,
   },
   imagePlaceholderText: {
     color: '#E6A4B4',
     fontSize: 14,
-    marginTop: 4,
+    textAlign: 'center',
+    fontWeight: '500',
   },
-  itemImage: {
-    width: 40,
-    height: 40,
+  modalFooter: {
+    padding: 16,
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#F5EEE6',
+    paddingBottom: Platform.OS === 'ios' ? 16 : 16,
+    borderTopWidth: 0,
+  },
+  submitButton: {
     borderRadius: 8,
+  },
+  swipeableContainer: {
+    overflow: 'hidden',
+  },
+  checkboxContainer: {
     marginRight: 8,
   },
-  itemTextContainer: {
-    flex: 1,
+  checkbox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: '#E6A4B4',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  itemDescription: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 2,
-  },
-  descriptionInput: {
-    marginBottom: 24,
-    backgroundColor: '#FFF8E3',
-    height: 80,
+  checkIcon: {
+    margin: 0,
+    padding: 0,
   },
   detailsModalContainer: {
     margin: 20,
@@ -760,24 +767,62 @@ const styles = StyleSheet.create({
   detailsCloseButton: {
     flex: 1,
   },
-  checkboxContainer: {
+  itemImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 8,
     marginRight: 8,
   },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#E6A4B4',
+  itemTextContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  itemDescription: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 2,
+  },
+  swipeActionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 56,
+    gap: 4,
+    paddingHorizontal: 4,
+    marginBottom: 12,
+    marginHorizontal: 2,
+  },
+  actionButton: {
+    height: 56,
+    width: 56,
     justifyContent: 'center',
     alignItems: 'center',
+    borderRadius: 12,
   },
-  checkIcon: {
-    margin: 0,
-    padding: 0,
+  editButton: {
+    backgroundColor: '#F3D7CA',
   },
-  swipeableContainer: {
-    overflow: 'hidden',
+  deleteButton: {
+    backgroundColor: '#E6A4B4',
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  emptyStateTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    color: '#E6A4B4',
+    marginTop: 20,
+    textAlign: 'center',
+  },
+  emptyStateSubtitle: {
+    fontSize: 16,
+    color: '#E6A4B4',
+    marginTop: 8,
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
 
