@@ -10,7 +10,8 @@ export const saveList = async (list) => {
     
     const newList = {
       ...list,
-      id: Date.now().toString(),
+      id: list.id || Date.now().toString(),
+      title: list.title || list.name,
       createdAt: new Date().toISOString(),
       itemCount: list.items ? list.items.length : 0,
     };

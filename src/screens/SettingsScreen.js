@@ -34,7 +34,47 @@ const SUB_TAGS = {
     { id: 'pantry', label: 'Pantry', icon: 'food-variant' },
     { id: 'frozen', label: 'Frozen Foods', icon: 'snowflake' },
     { id: 'cleaning', label: 'Cleaning', icon: 'spray-bottle' },
-  ]
+  ],
+  home: [
+    { id: 'furniture', label: 'Furniture', icon: 'sofa' },
+    { id: 'decoration', label: 'Decor', icon: 'lamp' },
+    { id: 'kitchen', label: 'Kitchen', icon: 'pot-steam' },
+    { id: 'bathroom', label: 'Bathroom', icon: 'shower' },
+    { id: 'bedroom', label: 'Bedroom', icon: 'bed' },
+    { id: 'storage', label: 'Storage', icon: 'box' },
+    { id: 'lighting', label: 'Lighting', icon: 'ceiling-light' },
+    { id: 'cleaning_supplies', label: 'Cleaning Supplies', icon: 'broom' },
+  ],
+  gift: [
+    { id: 'birthday', label: 'Birthday', icon: 'cake-variant' },
+    { id: 'anniversary', label: 'Anniversary', icon: 'heart' },
+    { id: 'wedding', label: 'Wedding', icon: 'ring' },
+    { id: 'holiday', label: 'Holiday', icon: 'pine-tree' },
+    { id: 'thank_you', label: 'Thank You', icon: 'hand-heart' },
+    { id: 'baby', label: 'Baby Shower', icon: 'baby-carriage' },
+    { id: 'graduation', label: 'Graduation', icon: 'school' },
+    { id: 'housewarming', label: 'Housewarming', icon: 'home-heart' },
+  ],
+  health: [
+    { id: 'medicine', label: 'Medicine', icon: 'pill' },
+    { id: 'vitamins', label: 'Vitamins', icon: 'medication' },
+    { id: 'personal_care', label: 'Personal Care', icon: 'face-man-shimmer' },
+    { id: 'skincare', label: 'Skincare', icon: 'lotion' },
+    { id: 'haircare', label: 'Hair Care', icon: 'hair-dryer' },
+    { id: 'dental', label: 'Dental Care', icon: 'tooth' },
+    { id: 'fitness', label: 'Fitness', icon: 'dumbbell' },
+    { id: 'first_aid', label: 'First Aid', icon: 'bandage' },
+  ],
+  books: [
+    { id: 'fiction', label: 'Fiction', icon: 'book-open-variant' },
+    { id: 'nonfiction', label: 'Non-Fiction', icon: 'book-open-page-variant' },
+    { id: 'academic', label: 'Academic', icon: 'school' },
+    { id: 'magazines', label: 'Magazines', icon: 'newspaper' },
+    { id: 'children', label: 'Children Books', icon: 'book-child' },
+    { id: 'stationery', label: 'Stationery', icon: 'pencil' },
+    { id: 'art_supplies', label: 'Art Supplies', icon: 'palette' },
+    { id: 'office_supplies', label: 'Office Supplies', icon: 'office-building' },
+  ],
 };
 
 const SettingsScreen = () => {
@@ -177,12 +217,24 @@ const SettingsScreen = () => {
           for (let i = 1; i < lines.length; i++) {
             const line = lines[i];
             const parts = line.split(',').map(str => str.replace(/"/g, ''));
-            const [name, quantity, category, completed] = parts;
+            const [name, quantity, category] = parts;
 
-            // Find matching subTag
+            // Find matching subTag based on category name
             let subTag = null;
             if (SUB_TAGS[matchingTag.id]) {
-              const matchingSubTag = SUB_TAGS[matchingTag.id].find(st => st.label === category);
+              // Önce tam eşleşme dene
+              let matchingSubTag = SUB_TAGS[matchingTag.id].find(st => 
+                st.label.toLowerCase() === category.toLowerCase()
+              );
+
+              // Tam eşleşme yoksa, içeren kelimeleri dene
+              if (!matchingSubTag) {
+                matchingSubTag = SUB_TAGS[matchingTag.id].find(st => 
+                  category.toLowerCase().includes(st.label.toLowerCase()) ||
+                  st.label.toLowerCase().includes(category.toLowerCase())
+                );
+              }
+
               if (matchingSubTag) {
                 subTag = matchingSubTag.id;
               }
@@ -192,8 +244,9 @@ const SettingsScreen = () => {
               id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
               name: name || 'Untitled Item',
               quantity: quantity || '1 pcs',
-              subTag,
-              checked: completed === 'true'
+              category: category,
+              subTag: subTag,
+              checked: parts[3] === 'true'
             });
           }
 
@@ -206,18 +259,22 @@ const SettingsScreen = () => {
             items: items
           };
 
+          console.log('Importing list:', {
+            name: newList.name,
+            tag: newList.tag,
+            items: items.map(item => ({
+              name: item.name,
+              category: item.category,
+              subTag: item.subTag
+            }))
+          });
+
           await saveList(newList);
         }
 
         Alert.alert(
           'Success',
           'Your shopping lists have been imported successfully!',
-          [{ text: 'OK' }]
-        );
-      } else {
-        Alert.alert(
-          'Import Cancelled',
-          'No file was selected for import.',
           [{ text: 'OK' }]
         );
       }
