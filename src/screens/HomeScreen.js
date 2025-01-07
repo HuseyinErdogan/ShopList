@@ -1,8 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, Platform } from 'react-native';
 import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu, Dialog, Button } from 'react-native-paper';
 import { getLists, deleteList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
+
+const adUnitId = Platform.select({
+  ios: 'ca-app-pub-1589265782282899/6396750942',
+});
 
 const TAGS = [
   { id: 'grocery', icon: 'cart', label: 'Groceries', color: '#4CAF50' },
@@ -126,6 +131,7 @@ const HomeScreen = ({ navigation }) => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [deleteDialogVisible, setDeleteDialogVisible] = useState(false);
   const [selectedListId, setSelectedListId] = useState(null);
+  const bannerRef = useRef(null);
 
   useEffect(() => {
     loadLists();
@@ -141,6 +147,11 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     filterAndSortLists();
   }, [searchQuery, sortBy, selectedTag, shoppingLists]);
+
+  // iOS için banner reklamı yeniden yükleme
+  useForeground(() => {
+    Platform.OS === 'ios' && bannerRef.current?.load();
+  });
 
   const loadLists = async () => {
     const lists = await getLists();
@@ -395,6 +406,17 @@ const HomeScreen = ({ navigation }) => {
         )}
       </ScrollView>
 
+      <BannerAd
+        ref={bannerRef}
+        unitId={adUnitId}
+        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
+        requestOptions={{
+          networkExtras: {
+            collapsible: 'bottom',
+          },
+        }}
+      />
+
       <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
         <Dialog.Title style={styles.dialogTitle}>Delete List</Dialog.Title>
         <Dialog.Content>
@@ -408,7 +430,7 @@ const HomeScreen = ({ navigation }) => {
 
       <FAB
         icon="plus"
-        style={styles.fab}
+        style={[styles.fab, { bottom: 70 }]}
         onPress={() => navigation.navigate('CreateList')}
         color="#FFF8E3"
       />
@@ -566,7 +588,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     margin: 20,
     right: 0,
-    bottom: 20,
     backgroundColor: '#E6A4B4',
     borderRadius: 16,
     shadowColor: '#000',
@@ -611,6 +632,14 @@ const styles = StyleSheet.create({
   dialogContent: {
     color: '#666',
     fontSize: 16,
+  },
+  adContainer: {
+    width: '100%',
+    alignItems: 'center',
+    backgroundColor: '#F5EEE6',
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(230, 164, 180, 0.1)',
   },
 });
 

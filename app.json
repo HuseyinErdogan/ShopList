@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/ios/iTunesArtwork@2x.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,6 +21,19 @@
       "icons": {
         "app": {
           "ios": "./assets/ios/iTunesArtwork@3x.png"
+        },
+        "app-store": "./assets/ios/iTunesArtwork@3x.png",
+        "iphone": {
+          "20": "./assets/ios/AppIcons/Icon-App-20x20@1x.png",
+          "2x": "./assets/ios/AppIcons/Icon-App-20x20@2x.png",
+          "29": "./assets/ios/AppIcons/Icon-App-29x29@1x.png",
+          "2x": "./assets/ios/AppIcons/Icon-App-29x29@2x.png",
+          "3x": "./assets/ios/AppIcons/Icon-App-29x29@3x.png",
+          "40": "./assets/ios/AppIcons/Icon-App-40x40@1x.png",
+          "2x": "./assets/ios/AppIcons/Icon-App-40x40@2x.png",
+          "3x": "./assets/ios/AppIcons/Icon-App-40x40@3x.png",
+          "60": "./assets/ios/AppIcons/Icon-App-60x60@1x.png",
+          "60@2x": "./assets/ios/AppIcons/Icon-App-60x60@2x.png"
         }
       }
     },
@@ -44,5 +57,8 @@
         "appleTouchIcon": "./assets/web/apple-touch-icon.png"
       }
     }
+  },
+  "react-native-google-mobile-ads": {
+    "ios_app_id": "ca-app-pub-1589265782282899~3943081641"
   }
 }
