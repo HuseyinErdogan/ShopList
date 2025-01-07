@@ -313,68 +313,53 @@ const SettingsScreen = () => {
 
       <View style={styles.section}>
         <View style={styles.sectionHeaderContainer}>
-          <Text style={styles.sectionTitle}>Shopping Features</Text>
+          <Text style={styles.sectionTitle}>Premium Features</Text>
           <Badge style={styles.comingSoonBadge}>Coming Soon</Badge>
         </View>
         <List.Item
           title="Dark Mode"
-          description="Enable dark theme for the app"
-          left={props => <List.Icon {...props} icon="theme-light-dark" color="#CCCCCC" />}
-          right={() => (
-            <Switch
-              disabled
-              value={false}
-              color="#CCCCCC"
-            />
-          )}
+          description="Personalize your app with a sleek dark theme"
+          left={props => <List.Icon {...props} icon="theme-light-dark" color="#E6A4B4" />}
         />
         <List.Item
-          title="Show Price Totals"
-          description="Display total prices for each list"
-          left={props => <List.Icon {...props} icon="currency-usd" color="#CCCCCC" />}
-          right={() => (
-            <Switch
-              disabled
-              value={false}
-              color="#CCCCCC"
-            />
-          )}
+          title="Price Tracking"
+          description="Track prices and view total expenses for each list"
+          left={props => <List.Icon {...props} icon="currency-usd" color="#E6A4B4" />}
         />
         <List.Item
-          title="Auto Calculate"
-          description="Automatically calculate totals when prices change"
-          left={props => <List.Icon {...props} icon="calculator" color="#CCCCCC" />}
-          right={() => (
-            <Switch
-              disabled
-              value={false}
-              color="#CCCCCC"
-            />
-          )}
+          title="Smart Receipt Scanner"
+          description="Scan receipts to automatically add items and prices"
+          left={props => <List.Icon {...props} icon="camera" color="#E6A4B4" />}
         />
         <List.Item
           title="Smart Categories"
-          description="Automatically categorize items as you add them"
-          left={props => <List.Icon {...props} icon="tag-multiple" color="#CCCCCC" />}
-          right={() => (
-            <Switch
-              disabled
-              value={false}
-              color="#CCCCCC"
-            />
-          )}
+          description="AI-powered automatic item categorization"
+          left={props => <List.Icon {...props} icon="tag-multiple" color="#E6A4B4" />}
         />
         <List.Item
-          title="Shopping History"
-          description="Track your shopping patterns and get insights"
-          left={props => <List.Icon {...props} icon="chart-line" color="#CCCCCC" />}
-          right={() => (
-            <Switch
-              disabled
-              value={false}
-              color="#CCCCCC"
-            />
-          )}
+          title="Shopping Analytics"
+          description="Get insights into your shopping patterns and expenses"
+          left={props => <List.Icon {...props} icon="chart-line" color="#E6A4B4" />}
+        />
+        <List.Item
+          title="Cloud Sync"
+          description="Sync your lists across all your devices"
+          left={props => <List.Icon {...props} icon="cloud-sync" color="#E6A4B4" />}
+        />
+        <List.Item
+          title="Collaborative Lists"
+          description="Share and edit lists with family and friends"
+          left={props => <List.Icon {...props} icon="account-group" color="#E6A4B4" />}
+        />
+        <List.Item
+          title="Budget Planning"
+          description="Set budgets and get alerts for overspending"
+          left={props => <List.Icon {...props} icon="wallet" color="#E6A4B4" />}
+        />
+        <List.Item
+          title="Smart Suggestions"
+          description="Get personalized item and store recommendations"
+          left={props => <List.Icon {...props} icon="lightbulb" color="#E6A4B4" />}
         />
       </View>
 

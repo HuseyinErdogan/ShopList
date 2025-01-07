@@ -5,10 +5,12 @@ import { getLists, deleteList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
-const adUnitId = Platform.select({
-  ios: 'ca-app-pub-1589265782282899/6396750942',
-  android: 'ca-app-pub-1589265782282899/3291780302',
-});
+const adUnitId = __DEV__
+  ? TestIds.BANNER
+  : Platform.select({
+      ios: 'ca-app-pub-1589265782282899/6396750942',
+      android: 'ca-app-pub-1589265782282899/3291780302',
+    });
 
 const TAGS = [
   { id: 'grocery', icon: 'cart', label: 'Groceries', color: '#4CAF50' },

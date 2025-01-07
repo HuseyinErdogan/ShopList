@@ -792,58 +792,60 @@ const ListDetailsScreen = ({ route, navigation }) => {
                   onPress={() => showItemDetails(item)}
                   style={styles.cardWrapper}
                 >
-                  <Card style={[
-                    styles.itemCard,
-                    { 
-                      backgroundColor: theme.surface,
-                      borderColor: theme.border,
-                    },
-                    getTagShadowStyle(theme.primary)
-                  ]}>
-                    <Card.Content style={styles.itemContent}>
-                      <View style={styles.itemMain}>
-                        <View style={styles.itemLeft}>
-                          <CustomCheckbox
-                            checked={item.checked}
-                            onPress={() => toggleItem(item.id)}
-                            theme={theme}
-                          />
-                          {item.image && (
-                            <Image 
-                              source={{ uri: item.image }} 
-                              style={styles.itemImage} 
+                  <View style={{ overflow: 'visible' }}>
+                    <Card style={[
+                      styles.itemCard,
+                      { 
+                        backgroundColor: theme.surface,
+                        borderColor: theme.border,
+                      },
+                      getTagShadowStyle(theme.primary)
+                    ]}>
+                      <Card.Content style={styles.itemContent}>
+                        <View style={styles.itemMain}>
+                          <View style={styles.itemLeft}>
+                            <CustomCheckbox
+                              checked={item.checked}
+                              onPress={() => toggleItem(item.id)}
+                              theme={theme}
                             />
-                          )}
-                          <View style={styles.itemTextContainer}>
-                            <Text style={[
-                              styles.itemName,
-                              item.checked && styles.checkedItem
-                            ]}>{item.name}</Text>
-                            {item.description ? (
-                              <Text style={styles.itemDescription} numberOfLines={1}>
-                                {item.description}
-                              </Text>
-                            ) : null}
-                            {item.subTag && SUB_TAGS[tag?.id] && (
-                              <View style={styles.itemSubTagContainer}>
-                                <MaterialCommunityIcons
-                                  name={SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.icon}
-                                  size={12}
-                                  color={tag.color}
-                                />
-                                <Text style={[styles.itemSubTag, { color: tag.color }]}>
-                                  {SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.label}
-                                </Text>
-                              </View>
+                            {item.image && (
+                              <Image 
+                                source={{ uri: item.image }} 
+                                style={styles.itemImage} 
+                              />
                             )}
+                            <View style={styles.itemTextContainer}>
+                              <Text style={[
+                                styles.itemName,
+                                item.checked && styles.checkedItem
+                              ]}>{item.name}</Text>
+                              {item.description ? (
+                                <Text style={styles.itemDescription} numberOfLines={1}>
+                                  {item.description}
+                                </Text>
+                              ) : null}
+                              {item.subTag && SUB_TAGS[tag?.id] && (
+                                <View style={styles.itemSubTagContainer}>
+                                  <MaterialCommunityIcons
+                                    name={SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.icon}
+                                    size={12}
+                                    color={tag.color}
+                                  />
+                                  <Text style={[styles.itemSubTag, { color: tag.color }]}>
+                                    {SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.label}
+                                  </Text>
+                                </View>
+                              )}
+                            </View>
+                          </View>
+                          <View style={styles.quantityContainer}>
+                            <Text style={[styles.quantity, { color: tag?.color }]}>{item.quantity}</Text>
                           </View>
                         </View>
-                        <View style={styles.quantityContainer}>
-                          <Text style={[styles.quantity, { color: tag?.color }]}>{item.quantity}</Text>
-                        </View>
-                      </View>
-                    </Card.Content>
-                  </Card>
+                      </Card.Content>
+                    </Card>
+                  </View>
                 </TouchableOpacity>
               </Swipeable>
             ))}
@@ -859,19 +861,21 @@ const ListDetailsScreen = ({ route, navigation }) => {
             setEditingItem(null);
           }}
           contentContainerStyle={[styles.modalContainer, { backgroundColor: theme.pastel }]}>
-          <ScrollView>
-            <AddItemForm
-              onSubmit={handleSubmitItem}
-              onClose={() => {
-                setVisible(false);
-                setEditingItem(null);
-              }}
-              editingItem={editingItem}
-              tag={tag}
-              subTags={SUB_TAGS[tag?.id] || []}
-              theme={theme}
-            />
-          </ScrollView>
+          <View>
+            <ScrollView>
+              <AddItemForm
+                onSubmit={handleSubmitItem}
+                onClose={() => {
+                  setVisible(false);
+                  setEditingItem(null);
+                }}
+                editingItem={editingItem}
+                tag={tag}
+                subTags={SUB_TAGS[tag?.id] || []}
+                theme={theme}
+              />
+            </ScrollView>
+          </View>
         </Modal>
       </Portal>
 
@@ -883,50 +887,54 @@ const ListDetailsScreen = ({ route, navigation }) => {
             setSelectedItem(null);
           }}
           contentContainerStyle={styles.detailsModalContainer}>
-          {selectedItem && (
+          <View style={{ overflow: 'visible' }}>
             <Card style={[styles.detailsCard, getTagShadowStyle(tag?.color)]}>
-              {selectedItem.image && (
-                <Card.Cover source={{ uri: selectedItem.image }} style={styles.detailsImage} />
-              )}
-              <Card.Content style={styles.detailsCardContent}>
-                <Text style={styles.detailsTitle}>{selectedItem.name}</Text>
-                <Text style={[styles.detailsQuantity, { color: tag?.color }]}>
-                  Quantity: {selectedItem.quantity}
-                </Text>
-                {selectedItem.subTag && SUB_TAGS[tag?.id] && (
-                  <Chip
-                    style={[styles.detailsSubTag, { borderColor: tag.color }]}
-                    textStyle={{ color: tag.color }}
-                    icon={() => (
-                      <MaterialCommunityIcons
-                        name={SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.icon}
-                        size={16}
-                        color={tag.color}
-                      />
+              {selectedItem && (
+                <>
+                  {selectedItem.image && (
+                    <Card.Cover source={{ uri: selectedItem.image }} style={styles.detailsImage} />
+                  )}
+                  <Card.Content style={styles.detailsCardContent}>
+                    <Text style={styles.detailsTitle}>{selectedItem.name}</Text>
+                    <Text style={[styles.detailsQuantity, { color: tag?.color }]}>
+                      Quantity: {selectedItem.quantity}
+                    </Text>
+                    {selectedItem.subTag && SUB_TAGS[tag?.id] && (
+                      <Chip
+                        style={[styles.detailsSubTag, { borderColor: tag.color }]}
+                        textStyle={{ color: tag.color }}
+                        icon={() => (
+                          <MaterialCommunityIcons
+                            name={SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.icon}
+                            size={16}
+                            color={tag.color}
+                          />
+                        )}
+                      >
+                        {SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.label}
+                      </Chip>
                     )}
-                  >
-                    {SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.label}
-                  </Chip>
-                )}
-                {selectedItem.description && (
-                  <>
-                    <Text style={styles.descriptionLabel}>Description:</Text>
-                    <Text style={styles.descriptionText}>{selectedItem.description}</Text>
-                  </>
-                )}
-              </Card.Content>
-              <Card.Actions style={styles.detailsCardActions}>
-                <Button
-                  mode="contained"
-                  onPress={() => setDetailsModalVisible(false)}
-                  buttonColor={tag?.color || "#E6A4B4"}
-                  textColor="#FFF8E3"
-                  style={styles.detailsCloseButton}>
-                  Close
-                </Button>
-              </Card.Actions>
+                    {selectedItem.description && (
+                      <>
+                        <Text style={styles.descriptionLabel}>Description:</Text>
+                        <Text style={styles.descriptionText}>{selectedItem.description}</Text>
+                      </>
+                    )}
+                  </Card.Content>
+                  <Card.Actions style={styles.detailsCardActions}>
+                    <Button
+                      mode="contained"
+                      onPress={() => setDetailsModalVisible(false)}
+                      buttonColor={tag?.color || "#E6A4B4"}
+                      textColor="#FFF8E3"
+                      style={styles.detailsCloseButton}>
+                      Close
+                    </Button>
+                  </Card.Actions>
+                </>
+              )}
             </Card>
-          )}
+          </View>
         </Modal>
       </Portal>
 
@@ -1031,6 +1039,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     borderWidth: Platform.OS === 'ios' ? 0 : 1,
     borderColor: 'rgba(230, 164, 180, 0.1)',
+    overflow: 'visible',
   },
   itemContent: {
     height: '100%',
@@ -1129,15 +1138,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5EEE6',
     margin: 20,
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   detailsModalContainer: {
     margin: 20,
+    overflow: 'visible',
   },
   detailsCard: {
     backgroundColor: '#F5EEE6',
     borderRadius: 16,
-    overflow: 'hidden',
+    overflow: 'visible',
   },
   detailsImage: {
     height: 200,
