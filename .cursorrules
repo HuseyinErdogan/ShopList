@@ -3,3 +3,6 @@ Listeler ve ürünler localstorage'da tutulacak.
 Profesyonel görünüm ve kullanımı sağlayacak.
 Pastel renkler kullanılacak.
 Uygulama ismi "Dobydoby: My Shopping List" olacak.
+i18n kullanılacak.
+src/i18n/locales/en.json dosyasında tüm metinler bulunacak.
+src/i18n/locales/tr.json dosyasında tüm metinler bulunacak.

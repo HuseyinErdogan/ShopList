@@ -5,6 +5,7 @@ import { getListItems, updateListItems } from '../utils/storage';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -287,6 +288,7 @@ const CustomCheckbox = ({ checked, onPress, theme = DEFAULT_THEME }) => {
 };
 
 const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, subTags, theme = DEFAULT_THEME }) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: editingItem?.name || '',
     quantity: editingItem?.quantity?.split(' ')[0] || '1',
@@ -356,7 +358,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
           onPress={onClose}
         />
         <Text style={styles.modalTitle}>
-          {editingItem ? 'Edit Item' : 'Add New Item'}
+          {editingItem ? t('listDetails.addItem.editTitle') : t('listDetails.addItem.title')}
         </Text>
         <View style={{ width: 40 }} />
       </View>
@@ -382,18 +384,20 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
                 color={theme.primary}
                 style={{ margin: 0 }}
               />
-              <Text style={[styles.imagePlaceholderText, { color: theme.primary }]}>Add Photo</Text>
+              <Text style={[styles.imagePlaceholderText, { color: theme.primary }]}>
+                {t('listDetails.addItem.addPhoto')}
+              </Text>
             </View>
           )}
         </TouchableOpacity>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Item Name</Text>
+          <Text style={styles.inputLabel}>{t('listDetails.addItem.itemName.label')}</Text>
           <TextInput
             value={formData.name}
             onChangeText={(value) => handleChange('name', value)}
             style={[styles.input, { backgroundColor: theme.surface }]}
-            placeholder="Enter item name"
+            placeholder={t('listDetails.addItem.itemName.placeholder')}
             placeholderTextColor="#999"
             mode="outlined"
             outlineColor={theme.border}
@@ -402,7 +406,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Quantity</Text>
+          <Text style={styles.inputLabel}>{t('listDetails.addItem.quantity')}</Text>
           <View style={styles.quantityRow}>
             <TextInput
               value={formData.quantity}
@@ -452,12 +456,12 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.inputLabel}>Description (Optional)</Text>
+          <Text style={styles.inputLabel}>{t('listDetails.addItem.description.label')}</Text>
           <TextInput
             value={formData.description}
             onChangeText={(value) => handleChange('description', value)}
             style={[styles.input, styles.descriptionInput, { backgroundColor: theme.surface }]}
-            placeholder="Add a description"
+            placeholder={t('listDetails.addItem.description.placeholder')}
             placeholderTextColor="#999"
             mode="outlined"
             outlineColor={theme.border}
@@ -469,7 +473,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
 
         {subTags && subTags.length > 0 && (
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Category</Text>
+            <Text style={styles.inputLabel}>{t('listDetails.addItem.category')}</Text>
             <ScrollView 
               horizontal 
               showsHorizontalScrollIndicator={false}
@@ -501,7 +505,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
                     { color: theme.primary },
                     formData.subTag === subTag.id && { color: theme.surface }
                   ]}>
-                    {subTag.label}
+                    {t(`home.subTags.${tag?.id}.${subTag.id}`)}
                   </Text>
                 </TouchableOpacity>
               ))}
@@ -518,7 +522,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
           buttonColor={theme.primary}
           textColor={theme.surface}
         >
-          {editingItem ? 'Save Changes' : 'Add Item'}
+          {editingItem ? t('listDetails.addItem.button.save') : t('listDetails.addItem.button.add')}
         </Button>
       </View>
     </View>
@@ -526,6 +530,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
 });
 
 const ListDetailsScreen = ({ route, navigation }) => {
+  const { t } = useTranslation();
   const { listId, listTitle, note, tag } = route.params;
   const [items, setItems] = useState([]);
   const [visible, setVisible] = useState(false);
@@ -642,7 +647,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
     
     items.forEach(item => {
       const subTagInfo = item.subTag && SUB_TAGS[tag?.id]?.find(st => st.id === item.subTag);
-      const category = subTagInfo ? subTagInfo.label : 'Other';
+      const category = subTagInfo ? t(`home.subTags.${tag?.id}.${item.subTag}`) : 'Other';
       
       if (!itemsByCategory[category]) {
         itemsByCategory[category] = [];
@@ -662,9 +667,9 @@ const ListDetailsScreen = ({ route, navigation }) => {
 
     try {
       await Clipboard.setString(shareText);
-      alert('List copied to clipboard!');
+      alert(t('listDetails.share.copied'));
     } catch (error) {
-      alert('Failed to copy list to clipboard');
+      alert(t('listDetails.share.failed'));
     }
   };
 
@@ -706,7 +711,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
 
       <View style={styles.filterContainer}>
         <Searchbar
-          placeholder="Search items"
+          placeholder={t('listDetails.searchPlaceholder')}
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={[styles.searchBar, { backgroundColor: theme.surface }]}
@@ -751,7 +756,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                 />
               )}
             >
-              {subTag.label}
+              {t(`home.subTags.${tag.id}.${subTag.id}`)}
             </Chip>
           ))}
         </ScrollView>
@@ -766,13 +771,13 @@ const ListDetailsScreen = ({ route, navigation }) => {
           />
           <Text style={[styles.emptyStateTitle, { color: theme.primary }]}>
             {searchQuery || selectedSubTags.length > 0 
-              ? 'No matching items found'
-              : 'Your shopping list is empty'}
+              ? t('listDetails.empty.noMatchingItems')
+              : t('listDetails.empty.noItems')}
           </Text>
           <Text style={[styles.emptyStateSubtitle, { color: theme.primary }]}>
             {searchQuery || selectedSubTags.length > 0 
-              ? 'Try different filters'
-              : 'Add some items to get started!'}
+              ? t('listDetails.empty.tryDifferent')
+              : t('listDetails.empty.addFirst')}
           </Text>
         </View>
       ) : (
@@ -833,7 +838,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                                     color={tag.color}
                                   />
                                   <Text style={[styles.itemSubTag, { color: tag.color }]}>
-                                    {SUB_TAGS[tag.id].find(st => st.id === item.subTag)?.label}
+                                    {t(`home.subTags.${tag.id}.${item.subTag}`)}
                                   </Text>
                                 </View>
                               )}
@@ -897,26 +902,11 @@ const ListDetailsScreen = ({ route, navigation }) => {
                   <Card.Content style={styles.detailsCardContent}>
                     <Text style={styles.detailsTitle}>{selectedItem.name}</Text>
                     <Text style={[styles.detailsQuantity, { color: tag?.color }]}>
-                      Quantity: {selectedItem.quantity}
+                      {t('listDetails.itemDetails.quantity')}: {selectedItem.quantity}
                     </Text>
-                    {selectedItem.subTag && SUB_TAGS[tag?.id] && (
-                      <Chip
-                        style={[styles.detailsSubTag, { borderColor: tag.color }]}
-                        textStyle={{ color: tag.color }}
-                        icon={() => (
-                          <MaterialCommunityIcons
-                            name={SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.icon}
-                            size={16}
-                            color={tag.color}
-                          />
-                        )}
-                      >
-                        {SUB_TAGS[tag.id].find(st => st.id === selectedItem.subTag)?.label}
-                      </Chip>
-                    )}
                     {selectedItem.description && (
                       <>
-                        <Text style={styles.descriptionLabel}>Description:</Text>
+                        <Text style={styles.descriptionLabel}>{t('listDetails.itemDetails.description')}:</Text>
                         <Text style={styles.descriptionText}>{selectedItem.description}</Text>
                       </>
                     )}
@@ -928,7 +918,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                       buttonColor={tag?.color || "#E6A4B4"}
                       textColor="#FFF8E3"
                       style={styles.detailsCloseButton}>
-                      Close
+                      {t('listDetails.itemDetails.close')}
                     </Button>
                   </Card.Actions>
                 </>

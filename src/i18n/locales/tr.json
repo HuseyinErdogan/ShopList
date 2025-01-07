@@ -1,0 +1,296 @@
+{
+  "home": {
+    "title": "Alışveriş Listelerim",
+    "searchPlaceholder": "Listelerde ara",
+    "sortMenu": {
+      "byDate": "Tarihe Göre Sırala",
+      "byName": "İsme Göre Sırala",
+      "byItems": "Ürün Sayısına Göre Sırala"
+    },
+    "tags": {
+      "all": "Tümü",
+      "grocery": "Market",
+      "home": "Ev & Yaşam",
+      "gift": "Hediyeler",
+      "clothing": "Moda",
+      "health": "Sağlık & Güzellik",
+      "books": "Kitap & Kırtasiye",
+      "electronics": "Elektronik",
+      "hobby": "Hobi",
+      "sports": "Spor",
+      "kids": "Çocuk & Oyuncak",
+      "pets": "Evcil Hayvan",
+      "garden": "Bahçe & Dış Mekan"
+    },
+    "subTags": {
+      "grocery": {
+        "fruits": "Meyve",
+        "vegetables": "Sebze",
+        "dairy": "Süt & Yumurta",
+        "meat": "Et & Deniz Ürünleri",
+        "bakery": "Fırın",
+        "drinks": "İçecekler",
+        "snacks": "Atıştırmalık",
+        "pantry": "Kiler",
+        "frozen": "Donmuş Gıda",
+        "cleaning": "Temizlik"
+      },
+      "home": {
+        "furniture": "Mobilya",
+        "decoration": "Dekorasyon",
+        "kitchen": "Mutfak",
+        "bathroom": "Banyo",
+        "bedroom": "Yatak Odası",
+        "storage": "Depolama",
+        "lighting": "Aydınlatma",
+        "cleaning_supplies": "Temizlik Malzemeleri"
+      },
+      "clothing": {
+        "tops": "Üst Giyim",
+        "bottoms": "Alt Giyim",
+        "dresses": "Elbise",
+        "outerwear": "Dış Giyim",
+        "shoes": "Ayakkabı",
+        "accessories": "Aksesuar",
+        "activewear": "Spor Giyim",
+        "underwear": "İç Giyim"
+      },
+      "electronics": {
+        "computer": "Bilgisayar",
+        "phone": "Telefon & Tablet",
+        "gaming": "Oyun",
+        "tv_audio": "TV & Ses",
+        "cameras": "Kamera",
+        "accessories": "Aksesuar",
+        "smart_home": "Akıllı Ev",
+        "office": "Ofis Ekipmanları"
+      },
+      "health": {
+        "medicine": "İlaç",
+        "vitamins": "Vitamin",
+        "personal_care": "Kişisel Bakım",
+        "skincare": "Cilt Bakımı",
+        "haircare": "Saç Bakımı",
+        "dental": "Ağız Bakımı",
+        "fitness": "Fitness",
+        "first_aid": "İlk Yardım"
+      },
+      "books": {
+        "fiction": "Kurgu",
+        "nonfiction": "Kurgu Dışı",
+        "academic": "Akademik",
+        "magazines": "Dergi",
+        "children": "Çocuk Kitapları",
+        "stationery": "Kırtasiye",
+        "art_supplies": "Sanat Malzemeleri",
+        "office_supplies": "Ofis Malzemeleri"
+      },
+      "hobby": {
+        "art": "Sanat & El İşi",
+        "music": "Müzik",
+        "photography": "Fotoğrafçılık",
+        "collectibles": "Koleksiyon",
+        "games": "Kutu Oyunları",
+        "crafting": "El Sanatları",
+        "instruments": "Müzik Aletleri",
+        "modeling": "Maket"
+      },
+      "gift": {
+        "birthday": "Doğum Günü",
+        "anniversary": "Yıldönümü",
+        "wedding": "Düğün",
+        "holiday": "Tatil",
+        "thank_you": "Teşekkür",
+        "baby": "Bebek",
+        "graduation": "Mezuniyet",
+        "housewarming": "Ev Hediyesi"
+      },
+      "sports": {
+        "fitness": "Fitness",
+        "outdoor": "Açık Hava Sporları",
+        "team_sports": "Takım Sporları",
+        "water_sports": "Su Sporları",
+        "cycling": "Bisiklet",
+        "running": "Koşu",
+        "yoga": "Yoga",
+        "equipment": "Ekipman"
+      },
+      "kids": {
+        "toys": "Oyuncak",
+        "clothing": "Giyim",
+        "school": "Okul Malzemeleri",
+        "books": "Kitap",
+        "baby_care": "Bebek Bakımı",
+        "games": "Oyunlar",
+        "art_craft": "Sanat & El İşi",
+        "outdoor": "Dış Mekan Oyuncakları"
+      },
+      "pets": {
+        "food": "Mama",
+        "toys": "Oyuncak",
+        "care": "Bakım & Tımar",
+        "health": "Sağlık",
+        "accessories": "Aksesuar",
+        "bedding": "Yatak",
+        "cleaning": "Temizlik",
+        "travel": "Seyahat"
+      },
+      "garden": {
+        "plants": "Bitkiler",
+        "tools": "Aletler",
+        "furniture": "Dış Mekan Mobilyası",
+        "decor": "Bahçe Dekorasyonu",
+        "lighting": "Dış Mekan Aydınlatma",
+        "soil": "Toprak & Gübre",
+        "pots": "Saksı",
+        "equipment": "Ekipman"
+      }
+    },
+    "empty": {
+      "noLists": "Henüz alışveriş listesi yok",
+      "noMatchingLists": "Eşleşen liste bulunamadı",
+      "createFirst": "İlk listeni oluşturmak için + butonuna dokun",
+      "tryDifferent": "Farklı filtreler dene"
+    },
+    "list": {
+      "items": "ürün"
+    },
+    "deleteDialog": {
+      "title": "Listeyi Sil",
+      "message": "Bu listeyi silmek istediğinizden emin misiniz?",
+      "cancel": "İptal",
+      "delete": "Sil"
+    }
+  },
+  "navigation": {
+    "home": "Ana Sayfa",
+    "settings": "Ayarlar"
+  },
+  "createList": {
+    "title": "Yeni Liste Oluştur",
+    "listTitle": {
+      "label": "Liste Adı",
+      "placeholder": "Liste adını girin"
+    },
+    "category": {
+      "label": "Kategori (İsteğe bağlı)"
+    },
+    "note": {
+      "label": "Not (İsteğe bağlı)",
+      "placeholder": "Listeniz hakkında not ekleyin"
+    },
+    "button": "Liste Oluştur",
+    "errors": {
+      "titleRequired": "Lütfen bir liste adı girin",
+      "createFailed": "Liste oluşturulamadı. Lütfen tekrar deneyin."
+    }
+  },
+  "listDetails": {
+    "searchPlaceholder": "Ürünlerde ara",
+    "empty": {
+      "noItems": "Alışveriş listeniz boş",
+      "noMatchingItems": "Eşleşen ürün bulunamadı",
+      "addFirst": "Başlamak için ürün ekleyin!",
+      "tryDifferent": "Farklı filtreler deneyin"
+    },
+    "addItem": {
+      "title": "Yeni Ürün Ekle",
+      "editTitle": "Ürünü Düzenle",
+      "itemName": {
+        "label": "Ürün Adı",
+        "placeholder": "Ürün adını girin"
+      },
+      "quantity": "Miktar",
+      "description": {
+        "label": "Açıklama (İsteğe bağlı)",
+        "placeholder": "Açıklama ekleyin"
+      },
+      "category": "Kategori",
+      "addPhoto": "Fotoğraf Ekle",
+      "button": {
+        "add": "Ürün Ekle",
+        "save": "Değişiklikleri Kaydet"
+      }
+    },
+    "itemDetails": {
+      "quantity": "Miktar",
+      "description": "Açıklama",
+      "close": "Kapat"
+    },
+    "share": {
+      "copied": "Liste panoya kopyalandı!",
+      "failed": "Liste panoya kopyalanamadı"
+    }
+  },
+  "settings": {
+    "header": {
+      "title": "Tercihler",
+      "subtitle": "Alışveriş deneyiminizi özelleştirin"
+    },
+    "premium": {
+      "title": "Premium Özellikler",
+      "comingSoon": "Yakında",
+      "darkMode": {
+        "title": "Karanlık Mod",
+        "description": "Uygulamanızı şık bir karanlık tema ile kişiselleştirin"
+      },
+      "priceTracking": {
+        "title": "Fiyat Takibi",
+        "description": "Her liste için fiyatları takip edin ve toplam harcamaları görüntüleyin"
+      },
+      "receiptScanner": {
+        "title": "Akıllı Fiş Tarayıcı",
+        "description": "Fişleri tarayarak ürünleri ve fiyatları otomatik olarak ekleyin"
+      },
+      "smartCategories": {
+        "title": "Akıllı Kategoriler",
+        "description": "Yapay zeka destekli otomatik ürün kategorizasyonu"
+      },
+      "analytics": {
+        "title": "Alışveriş Analitiği",
+        "description": "Alışveriş alışkanlıklarınız ve harcamalarınız hakkında bilgi edinin"
+      },
+      "cloudSync": {
+        "title": "Bulut Senkronizasyonu",
+        "description": "Listelerinizi tüm cihazlarınızda senkronize edin"
+      },
+      "collaboration": {
+        "title": "İşbirlikçi Listeler",
+        "description": "Listelerinizi aile ve arkadaşlarınızla paylaşın ve düzenleyin"
+      },
+      "budget": {
+        "title": "Bütçe Planlaması",
+        "description": "Bütçe belirleyin ve aşırı harcama için uyarılar alın"
+      },
+      "suggestions": {
+        "title": "Akıllı Öneriler",
+        "description": "Kişiselleştirilmiş ürün ve mağaza önerileri alın"
+      }
+    },
+    "data": {
+      "title": "Veri Yönetimi",
+      "export": {
+        "title": "Verileri Dışa Aktar",
+        "description": "Listelerinizi CSV olarak dışa aktarın"
+      },
+      "import": {
+        "title": "Verileri İçe Aktar",
+        "description": "CSV'den listeleri içe aktarın"
+      }
+    },
+    "about": {
+      "title": "Hakkında",
+      "version": "Versiyon"
+    },
+    "danger": {
+      "title": "Tehlikeli Bölge",
+      "clearData": "Tüm Verileri Temizle",
+      "dialog": {
+        "title": "Emin misiniz?",
+        "message": "Bu işlem tüm alışveriş listelerinizi ve verilerinizi kalıcı olarak silecektir. Bu işlem geri alınamaz.",
+        "cancel": "İptal",
+        "confirm": "Tüm Verileri Sil"
+      }
+    }
+  }
+} 

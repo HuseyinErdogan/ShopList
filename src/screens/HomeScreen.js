@@ -3,14 +3,10 @@ import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity
 import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu, Dialog, Button } from 'react-native-paper';
 import { getLists, deleteList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-google-mobile-ads';
 
-const adUnitId = __DEV__
-  ? TestIds.BANNER
-  : Platform.select({
-      ios: 'ca-app-pub-1589265782282899/6396750942',
-      android: 'ca-app-pub-1589265782282899/3291780302',
-    });
+import { useTranslation } from 'react-i18next';
+
+
 
 const TAGS = [
   { id: 'grocery', icon: 'cart', label: 'Groceries', color: '#4CAF50' },
@@ -126,6 +122,7 @@ const getTagShadowStyle = (tagColor) => {
 
 const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
   const [shoppingLists, setShoppingLists] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLists, setFilteredLists] = useState([]);
@@ -151,10 +148,7 @@ const HomeScreen = ({ navigation }) => {
     filterAndSortLists();
   }, [searchQuery, sortBy, selectedTag, shoppingLists]);
 
-  // iOS için banner reklamı yeniden yükleme
-  useForeground(() => {
-    Platform.OS === 'ios' && bannerRef.current?.load();
-  });
+
 
   const loadLists = async () => {
     const lists = await getLists();
@@ -231,12 +225,12 @@ const HomeScreen = ({ navigation }) => {
       <StatusBar barStyle="dark-content" />
       
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Shopping Lists</Text>
+        <Text style={styles.headerTitle}>{t('home.title')}</Text>
       </View>
 
       <View style={styles.filterContainer}>
         <Searchbar
-          placeholder="Search lists"
+          placeholder={t('home.searchPlaceholder')}
           onChangeText={setSearchQuery}
           value={searchQuery}
           style={styles.searchBar}
@@ -263,17 +257,17 @@ const HomeScreen = ({ navigation }) => {
         >
           <Menu.Item 
             onPress={() => { setSortBy('date'); setSortMenuVisible(false); }}
-            title="Sort by Date"
+            title={t('home.sortMenu.byDate')}
             leadingIcon={sortBy === 'date' ? 'check' : 'calendar'}
           />
           <Menu.Item
             onPress={() => { setSortBy('name'); setSortMenuVisible(false); }}
-            title="Sort by Name"
+            title={t('home.sortMenu.byName')}
             leadingIcon={sortBy === 'name' ? 'check' : 'sort-alphabetical-ascending'}
           />
           <Menu.Item
             onPress={() => { setSortBy('items'); setSortMenuVisible(false); }}
-            title="Sort by Items"
+            title={t('home.sortMenu.byItems')}
             leadingIcon={sortBy === 'items' ? 'check' : 'sort-numeric-descending'}
           />
         </Menu>
@@ -303,7 +297,7 @@ const HomeScreen = ({ navigation }) => {
             !selectedTag && styles.selectedTagChipText,
             { color: !selectedTag ? '#FFF8E3' : '#E6A4B4' }
           ]}>
-            All
+            {t('home.tags.all')}
           </Text>
         </TouchableOpacity>
         {TAGS.map((tag) => (
@@ -326,7 +320,7 @@ const HomeScreen = ({ navigation }) => {
               selectedTag === tag.id && styles.selectedTagChipText,
               { color: selectedTag === tag.id ? '#FFF8E3' : tag.color }
             ]}>
-              {tag.label}
+              {t(`home.tags.${tag.id}`)}
             </Text>
           </TouchableOpacity>
         ))}
@@ -342,10 +336,10 @@ const HomeScreen = ({ navigation }) => {
               style={styles.emptyIcon}
             />
             <Text style={styles.emptyText}>
-              {searchQuery || selectedTag ? 'No matching lists found' : 'No shopping lists yet'}
+              {searchQuery || selectedTag ? t('home.empty.noMatchingLists') : t('home.empty.noLists')}
             </Text>
             <Text style={styles.emptySubText}>
-              {searchQuery || selectedTag ? 'Try different filters' : 'Create your first list by tapping the + button'}
+              {searchQuery || selectedTag ? t('home.empty.tryDifferent') : t('home.empty.createFirst')}
             </Text>
           </View>
         ) : (
@@ -399,7 +393,7 @@ const HomeScreen = ({ navigation }) => {
                       <Text style={[
                         styles.itemCount,
                         tagColor && { color: tagColor }
-                      ]}>{list.itemCount} items</Text>
+                      ]}>{list.itemCount} {t('home.list.items')}</Text>
                     </View>
                   </View>
                 </Card.Content>
@@ -409,25 +403,16 @@ const HomeScreen = ({ navigation }) => {
         )}
       </ScrollView>
 
-      <BannerAd
-        ref={bannerRef}
-        unitId={adUnitId}
-        size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-        requestOptions={{
-          networkExtras: {
-            collapsible: 'bottom',
-          },
-        }}
-      />
+
 
       <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>
-        <Dialog.Title style={styles.dialogTitle}>Delete List</Dialog.Title>
+        <Dialog.Title style={styles.dialogTitle}>{t('home.deleteDialog.title')}</Dialog.Title>
         <Dialog.Content>
-          <Text style={styles.dialogContent}>Are you sure you want to delete this list?</Text>
+          <Text style={styles.dialogContent}>{t('home.deleteDialog.message')}</Text>
         </Dialog.Content>
         <Dialog.Actions>
-          <Button onPress={hideDeleteDialog} textColor="#666">Cancel</Button>
-          <Button onPress={confirmDelete} textColor="#E6A4B4">Delete</Button>
+          <Button onPress={hideDeleteDialog} textColor="#666">{t('home.deleteDialog.cancel')}</Button>
+          <Button onPress={confirmDelete} textColor="#E6A4B4">{t('home.deleteDialog.delete')}</Button>
         </Dialog.Actions>
       </Dialog>
 

@@ -3,6 +3,7 @@ import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimension
 import { TextInput, Button, Text, IconButton, Snackbar } from 'react-native-paper';
 import { saveList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GRID_PADDING = 20;
@@ -55,6 +56,7 @@ const CategoryButton = ({ tag, isSelected, onPress }) => (
 );
 
 const CreateListScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const [listTitle, setListTitle] = useState('');
   const [note, setNote] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
@@ -62,7 +64,7 @@ const CreateListScreen = ({ navigation }) => {
 
   const handleCreateList = async () => {
     if (!listTitle.trim()) {
-      setError('Please enter a list title');
+      setError(t('createList.errors.titleRequired'));
       return;
     }
 
@@ -81,7 +83,7 @@ const CreateListScreen = ({ navigation }) => {
         tag: newList.tag,
       });
     } catch (err) {
-      setError('Failed to create list. Please try again.');
+      setError(t('createList.errors.createFailed'));
     }
   };
 
@@ -95,18 +97,18 @@ const CreateListScreen = ({ navigation }) => {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         />
-        <Text style={styles.headerTitle}>Create New List</Text>
+        <Text style={styles.headerTitle}>{t('createList.title')}</Text>
         <View style={{ width: 40 }} />
       </View>
 
       <ScrollView style={styles.formContainer} showsVerticalScrollIndicator={false}>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>List Title</Text>
+          <Text style={styles.label}>{t('createList.listTitle.label')}</Text>
           <TextInput
             value={listTitle}
             onChangeText={setListTitle}
             style={styles.input}
-            placeholder="Enter list title"
+            placeholder={t('createList.listTitle.placeholder')}
             placeholderTextColor="#999"
             mode="outlined"
             outlineColor="#E6A4B4"
@@ -115,12 +117,15 @@ const CreateListScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Category (Optional)</Text>
+          <Text style={styles.label}>{t('createList.category.label')}</Text>
           <View style={styles.tagsContainer}>
             {TAGS.map((tag) => (
               <CategoryButton
                 key={tag.id}
-                tag={tag}
+                tag={{
+                  ...tag,
+                  label: t(`home.tags.${tag.id}`)
+                }}
                 isSelected={selectedTag?.id === tag.id}
                 onPress={() => setSelectedTag(tag)}
               />
@@ -129,12 +134,12 @@ const CreateListScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Note (Optional)</Text>
+          <Text style={styles.label}>{t('createList.note.label')}</Text>
           <TextInput
             value={note}
             onChangeText={setNote}
             style={[styles.input, styles.noteInput]}
-            placeholder="Add a note about your list"
+            placeholder={t('createList.note.placeholder')}
             placeholderTextColor="#999"
             multiline
             numberOfLines={4}
@@ -150,7 +155,7 @@ const CreateListScreen = ({ navigation }) => {
           style={styles.createButton}
           labelStyle={styles.buttonLabel}
         >
-          Create List
+          {t('createList.button')}
         </Button>
       </ScrollView>
 

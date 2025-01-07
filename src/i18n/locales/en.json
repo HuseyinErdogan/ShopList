@@ -1,0 +1,296 @@
+{
+  "home": {
+    "title": "My Shopping Lists",
+    "searchPlaceholder": "Search lists",
+    "sortMenu": {
+      "byDate": "Sort by Date",
+      "byName": "Sort by Name",
+      "byItems": "Sort by Items"
+    },
+    "tags": {
+      "all": "All",
+      "grocery": "Groceries",
+      "home": "Home & Living",
+      "gift": "Gifts",
+      "clothing": "Fashion",
+      "health": "Health & Beauty",
+      "books": "Books & Stationery",
+      "electronics": "Electronics",
+      "hobby": "Hobbies",
+      "sports": "Sports",
+      "kids": "Kids & Toys",
+      "pets": "Pet Supplies",
+      "garden": "Garden & Outdoor"
+    },
+    "subTags": {
+      "grocery": {
+        "fruits": "Fruits",
+        "vegetables": "Vegetables",
+        "dairy": "Dairy & Eggs",
+        "meat": "Meat & Seafood",
+        "bakery": "Bakery",
+        "drinks": "Beverages",
+        "snacks": "Snacks",
+        "pantry": "Pantry",
+        "frozen": "Frozen Foods",
+        "cleaning": "Cleaning"
+      },
+      "home": {
+        "furniture": "Furniture",
+        "decoration": "Decor",
+        "kitchen": "Kitchen",
+        "bathroom": "Bathroom",
+        "bedroom": "Bedroom",
+        "storage": "Storage",
+        "lighting": "Lighting",
+        "cleaning_supplies": "Cleaning Supplies"
+      },
+      "clothing": {
+        "tops": "Tops",
+        "bottoms": "Bottoms",
+        "dresses": "Dresses",
+        "outerwear": "Outerwear",
+        "shoes": "Shoes",
+        "accessories": "Accessories",
+        "activewear": "Activewear",
+        "underwear": "Underwear"
+      },
+      "electronics": {
+        "computer": "Computers",
+        "phone": "Phones & Tablets",
+        "gaming": "Gaming",
+        "tv_audio": "TV & Audio",
+        "cameras": "Cameras",
+        "accessories": "Accessories",
+        "smart_home": "Smart Home",
+        "office": "Office Equipment"
+      },
+      "health": {
+        "medicine": "Medicine",
+        "vitamins": "Vitamins",
+        "personal_care": "Personal Care",
+        "skincare": "Skincare",
+        "haircare": "Hair Care",
+        "dental": "Dental Care",
+        "fitness": "Fitness",
+        "first_aid": "First Aid"
+      },
+      "books": {
+        "fiction": "Fiction",
+        "nonfiction": "Non-Fiction",
+        "academic": "Academic",
+        "magazines": "Magazines",
+        "children": "Children Books",
+        "stationery": "Stationery",
+        "art_supplies": "Art Supplies",
+        "office_supplies": "Office Supplies"
+      },
+      "hobby": {
+        "art": "Art & Craft",
+        "music": "Music",
+        "photography": "Photography",
+        "collectibles": "Collectibles",
+        "games": "Board Games",
+        "crafting": "Crafting",
+        "instruments": "Instruments",
+        "modeling": "Modeling"
+      },
+      "gift": {
+        "birthday": "Birthday",
+        "anniversary": "Anniversary",
+        "wedding": "Wedding",
+        "holiday": "Holiday",
+        "thank_you": "Thank You",
+        "baby": "Baby Shower",
+        "graduation": "Graduation",
+        "housewarming": "Housewarming"
+      },
+      "sports": {
+        "fitness": "Fitness",
+        "outdoor": "Outdoor Sports",
+        "team_sports": "Team Sports",
+        "water_sports": "Water Sports",
+        "cycling": "Cycling",
+        "running": "Running",
+        "yoga": "Yoga",
+        "equipment": "Equipment"
+      },
+      "kids": {
+        "toys": "Toys",
+        "clothing": "Clothing",
+        "school": "School Supplies",
+        "books": "Books",
+        "baby_care": "Baby Care",
+        "games": "Games",
+        "art_craft": "Art & Craft",
+        "outdoor": "Outdoor Play"
+      },
+      "pets": {
+        "food": "Pet Food",
+        "toys": "Toys",
+        "care": "Care & Grooming",
+        "health": "Health",
+        "accessories": "Accessories",
+        "bedding": "Bedding",
+        "cleaning": "Cleaning",
+        "travel": "Travel"
+      },
+      "garden": {
+        "plants": "Plants",
+        "tools": "Tools",
+        "furniture": "Outdoor Furniture",
+        "decor": "Garden Decor",
+        "lighting": "Outdoor Lighting",
+        "soil": "Soil & Fertilizers",
+        "pots": "Pots & Planters",
+        "equipment": "Equipment"
+      }
+    },
+    "empty": {
+      "noLists": "No shopping lists yet",
+      "noMatchingLists": "No matching lists found",
+      "createFirst": "Create your first list by tapping the + button",
+      "tryDifferent": "Try different filters"
+    },
+    "list": {
+      "items": "items"
+    },
+    "deleteDialog": {
+      "title": "Delete List",
+      "message": "Are you sure you want to delete this list?",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "createList": {
+    "title": "Create New List",
+    "listTitle": {
+      "label": "List Title",
+      "placeholder": "Enter list title"
+    },
+    "category": {
+      "label": "Category (Optional)"
+    },
+    "note": {
+      "label": "Note (Optional)",
+      "placeholder": "Add a note about your list"
+    },
+    "button": "Create List",
+    "errors": {
+      "titleRequired": "Please enter a list title",
+      "createFailed": "Failed to create list. Please try again."
+    }
+  },
+  "listDetails": {
+    "searchPlaceholder": "Search items",
+    "empty": {
+      "noItems": "Your shopping list is empty",
+      "noMatchingItems": "No matching items found",
+      "addFirst": "Add some items to get started!",
+      "tryDifferent": "Try different filters"
+    },
+    "addItem": {
+      "title": "Add New Item",
+      "editTitle": "Edit Item",
+      "itemName": {
+        "label": "Item Name",
+        "placeholder": "Enter item name"
+      },
+      "quantity": "Quantity",
+      "description": {
+        "label": "Description (Optional)",
+        "placeholder": "Add a description"
+      },
+      "category": "Category",
+      "addPhoto": "Add Photo",
+      "button": {
+        "add": "Add Item",
+        "save": "Save Changes"
+      }
+    },
+    "itemDetails": {
+      "quantity": "Quantity",
+      "description": "Description",
+      "close": "Close"
+    },
+    "share": {
+      "copied": "List copied to clipboard!",
+      "failed": "Failed to copy list to clipboard"
+    }
+  },
+  "settings": {
+    "header": {
+      "title": "Preferences",
+      "subtitle": "Customize your shopping experience"
+    },
+    "premium": {
+      "title": "Premium Features",
+      "comingSoon": "Coming Soon",
+      "darkMode": {
+        "title": "Dark Mode",
+        "description": "Personalize your app with a sleek dark theme"
+      },
+      "priceTracking": {
+        "title": "Price Tracking",
+        "description": "Track prices and view total expenses for each list"
+      },
+      "receiptScanner": {
+        "title": "Smart Receipt Scanner",
+        "description": "Scan receipts to automatically add items and prices"
+      },
+      "smartCategories": {
+        "title": "Smart Categories",
+        "description": "AI-powered automatic item categorization"
+      },
+      "analytics": {
+        "title": "Shopping Analytics",
+        "description": "Get insights into your shopping patterns and expenses"
+      },
+      "cloudSync": {
+        "title": "Cloud Sync",
+        "description": "Sync your lists across all your devices"
+      },
+      "collaboration": {
+        "title": "Collaborative Lists",
+        "description": "Share and edit lists with family and friends"
+      },
+      "budget": {
+        "title": "Budget Planning",
+        "description": "Set budgets and get alerts for overspending"
+      },
+      "suggestions": {
+        "title": "Smart Suggestions",
+        "description": "Get personalized item and store recommendations"
+      }
+    },
+    "data": {
+      "title": "Data Management",
+      "export": {
+        "title": "Export Data",
+        "description": "Export your lists as CSV"
+      },
+      "import": {
+        "title": "Import Data",
+        "description": "Import lists from CSV"
+      }
+    },
+    "about": {
+      "title": "About",
+      "version": "Version"
+    },
+    "danger": {
+      "title": "Danger Zone",
+      "clearData": "Clear All Data",
+      "dialog": {
+        "title": "Are you sure?",
+        "message": "This action will permanently delete all your shopping lists and data. This cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete All Data"
+      }
+    }
+  }
+} 
