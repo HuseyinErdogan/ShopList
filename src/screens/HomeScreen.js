@@ -7,6 +7,7 @@ import { BannerAd, BannerAdSize, TestIds, useForeground } from 'react-native-goo
 
 const adUnitId = Platform.select({
   ios: 'ca-app-pub-1589265782282899/6396750942',
+  android: 'ca-app-pub-1589265782282899/3291780302',
 });
 
 const TAGS = [
