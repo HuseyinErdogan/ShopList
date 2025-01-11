@@ -1,14 +1,14 @@
 {
   "home": {
     "title": "My Shopping Lists",
-    "searchPlaceholder": "Search lists",
+    "searchPlaceholder": "Search lists...",
     "sortMenu": {
       "byDate": "Sort by Date",
       "byName": "Sort by Name",
       "byItems": "Sort by Items"
     },
     "tags": {
-      "all": "All",
+      "all": "All Categories",
       "grocery": "Groceries",
       "home": "Home & Living",
       "gift": "Gifts",
@@ -147,10 +147,10 @@
       }
     },
     "empty": {
-      "noLists": "No shopping lists yet",
+      "noLists": "No Shopping Lists",
+      "createFirst": "Create your first shopping list!",
       "noMatchingLists": "No matching lists found",
-      "createFirst": "Create your first list by tapping the + button",
-      "tryDifferent": "Try different filters"
+      "tryDifferent": "Try a different search term or filter"
     },
     "list": {
       "items": "items"
@@ -158,8 +158,8 @@
     "deleteDialog": {
       "title": "Delete List",
       "message": "Are you sure you want to delete this list?",
-      "cancel": "Cancel",
-      "delete": "Delete"
+      "delete": "Delete",
+      "cancel": "Cancel"
     }
   },
   "navigation": {
@@ -186,27 +186,41 @@
     }
   },
   "listDetails": {
-    "searchPlaceholder": "Search items",
+    "searchPlaceholder": "Search items...",
+    "totalPrice": "Total Price",
+    "boughtItems": "Bought Items",
+    "remainingItems": "Remaining Items",
+    "completion": {
+      "title": "Congratulations!",
+      "subtitle": "You've completed all items in your list. What would you like to do next?",
+      "archive": "Archive List",
+      "reuse": "Clear & Reuse",
+      "continue": "Continue"
+    },
     "empty": {
-      "noItems": "Your shopping list is empty",
+      "noItems": "No Items Yet",
+      "addFirst": "Add your first item to the list!",
       "noMatchingItems": "No matching items found",
-      "addFirst": "Add some items to get started!",
-      "tryDifferent": "Try different filters"
+      "tryDifferent": "Try a different search term or filter"
     },
     "addItem": {
       "title": "Add New Item",
       "editTitle": "Edit Item",
+      "addPhoto": "Add Photo",
       "itemName": {
         "label": "Item Name",
         "placeholder": "Enter item name"
       },
       "quantity": "Quantity",
+      "price": {
+        "label": "Price",
+        "placeholder": "Enter price"
+      },
       "description": {
-        "label": "Description (Optional)",
-        "placeholder": "Add a description"
+        "label": "Description",
+        "placeholder": "Add notes or description"
       },
       "category": "Category",
-      "addPhoto": "Add Photo",
       "button": {
         "add": "Add Item",
         "save": "Save Changes"
@@ -214,6 +228,7 @@
     },
     "itemDetails": {
       "quantity": "Quantity",
+      "price": "Price",
       "description": "Description",
       "close": "Close"
     },

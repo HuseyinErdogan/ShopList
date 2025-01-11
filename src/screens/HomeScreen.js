@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity
 import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu, Dialog, Button } from 'react-native-paper';
 import { getLists, deleteList } from '../utils/storage';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-
 import { useTranslation } from 'react-i18next';
 
 
@@ -402,7 +401,6 @@ const HomeScreen = ({ navigation }) => {
           })
         )}
       </ScrollView>
-
 
 
       <Dialog visible={deleteDialogVisible} onDismiss={hideDeleteDialog}>

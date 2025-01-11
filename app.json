@@ -4,61 +4,44 @@
     "slug": "dobydoby-my-shopping-list",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/ios/iTunesArtwork@3x.png",
+    "icon": "./assets/appstore.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "assetBundlePatterns": ["**/*"],
     "splash": {
-      "image": "./assets/ios/iTunesArtwork@2x.png",
+      "image": "./assets/iTunesArtwork@2x.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#ff93cd"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.dobydoby.shoppinglist",
+      "bundleIdentifier": "com.huseyinerdogan.dobydoby",
       "buildNumber": "1.0.0",
-      "icon": "./assets/ios/iTunesArtwork@3x.png",
-      "requireFullScreen": true,
-      "icons": {
-        "app": {
-          "ios": "./assets/ios/iTunesArtwork@3x.png"
-        },
-        "app-store": "./assets/ios/iTunesArtwork@3x.png",
-        "iphone": {
-          "20": "./assets/ios/AppIcons/Icon-App-20x20@1x.png",
-          "29": "./assets/ios/AppIcons/Icon-App-29x29@1x.png",
-          "40": "./assets/ios/AppIcons/Icon-App-40x40@1x.png",
-          "60": "./assets/ios/AppIcons/Icon-App-60x60@1x.png",
-          "2x": "./assets/ios/AppIcons/Icon-App-40x40@2x.png",
-          "3x": "./assets/ios/AppIcons/Icon-App-40x40@3x.png",
-          "60@2x": "./assets/ios/AppIcons/Icon-App-60x60@2x.png"
-        }
-      }
+      "icon": "./assets/appstore.png",
+      "requireFullScreen": true
     },
     "android": {
-      "package": "com.dobydoby.shoppinglist",
+      "package": "com.huseyinerdogan.dobydoby",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/android/playstore-icon.png",
+        "foregroundImage": "./assets/playstore-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "icon": "./assets/android/playstore-icon.png"
-    },
-    "web": {
-      "favicon": "./assets/web/favicon.ico",
-      "icons": {
-        "favicon": "./assets/web/favicon.ico",
-        "favicon16": "./assets/web/favicon-16x16.png",
-        "favicon32": "./assets/web/favicon-32x32.png",
-        "chrome192": "./assets/web/android-chrome-192x192.png",
-        "chrome512": "./assets/web/android-chrome-512x512.png",
-        "appleTouchIcon": "./assets/web/apple-touch-icon.png"
-      }
+      "icon": "./assets/playstore-icon.png"
     },
     "extra": {
       "eas": {
         "projectId": "803e46c6-eea4-4bae-81d6-7f7bd80206e1"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-custom-assets",
+        {
+          "assetsPaths": ["./assets"]
+        }
+      ]
+    ]
   },
   "react-native-google-mobile-ads": {
     "android_app_id": "ca-app-pub-1589265782282899~5846625606",

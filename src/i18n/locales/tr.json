@@ -1,14 +1,14 @@
 {
   "home": {
     "title": "Alışveriş Listelerim",
-    "searchPlaceholder": "Listelerde ara",
+    "searchPlaceholder": "Liste ara...",
     "sortMenu": {
       "byDate": "Tarihe Göre Sırala",
       "byName": "İsme Göre Sırala",
       "byItems": "Ürün Sayısına Göre Sırala"
     },
     "tags": {
-      "all": "Tümü",
+      "all": "Tüm Kategoriler",
       "grocery": "Market",
       "home": "Ev & Yaşam",
       "gift": "Hediyeler",
@@ -147,10 +147,10 @@
       }
     },
     "empty": {
-      "noLists": "Henüz alışveriş listesi yok",
+      "noLists": "Alışveriş Listesi Yok",
+      "createFirst": "İlk alışveriş listeni oluştur!",
       "noMatchingLists": "Eşleşen liste bulunamadı",
-      "createFirst": "İlk listeni oluşturmak için + butonuna dokun",
-      "tryDifferent": "Farklı filtreler dene"
+      "tryDifferent": "Farklı bir arama terimi veya filtre dene"
     },
     "list": {
       "items": "ürün"
@@ -158,8 +158,8 @@
     "deleteDialog": {
       "title": "Listeyi Sil",
       "message": "Bu listeyi silmek istediğinizden emin misiniz?",
-      "cancel": "İptal",
-      "delete": "Sil"
+      "delete": "Sil",
+      "cancel": "İptal"
     }
   },
   "navigation": {
@@ -186,27 +186,41 @@
     }
   },
   "listDetails": {
-    "searchPlaceholder": "Ürünlerde ara",
+    "searchPlaceholder": "Ürün ara...",
+    "totalPrice": "Toplam Fiyat",
+    "boughtItems": "Alınan Ürünler",
+    "remainingItems": "Kalan Ürünler",
+    "completion": {
+      "title": "Tebrikler!",
+      "subtitle": "Listedeki tüm ürünleri tamamladınız. Şimdi ne yapmak istersiniz?",
+      "archive": "Listeyi Arşivle",
+      "reuse": "Temizle ve Yeniden Kullan",
+      "continue": "Devam Et"
+    },
     "empty": {
-      "noItems": "Alışveriş listeniz boş",
+      "noItems": "Henüz Ürün Yok",
+      "addFirst": "Listeye ilk ürününü ekle!",
       "noMatchingItems": "Eşleşen ürün bulunamadı",
-      "addFirst": "Başlamak için ürün ekleyin!",
-      "tryDifferent": "Farklı filtreler deneyin"
+      "tryDifferent": "Farklı bir arama terimi veya filtre dene"
     },
     "addItem": {
       "title": "Yeni Ürün Ekle",
       "editTitle": "Ürünü Düzenle",
+      "addPhoto": "Fotoğraf Ekle",
       "itemName": {
         "label": "Ürün Adı",
         "placeholder": "Ürün adını girin"
       },
       "quantity": "Miktar",
+      "price": {
+        "label": "Fiyat",
+        "placeholder": "Fiyat girin"
+      },
       "description": {
-        "label": "Açıklama (İsteğe bağlı)",
-        "placeholder": "Açıklama ekleyin"
+        "label": "Açıklama",
+        "placeholder": "Not veya açıklama ekleyin"
       },
       "category": "Kategori",
-      "addPhoto": "Fotoğraf Ekle",
       "button": {
         "add": "Ürün Ekle",
         "save": "Değişiklikleri Kaydet"
@@ -214,6 +228,7 @@
     },
     "itemDetails": {
       "quantity": "Miktar",
+      "price": "Fiyat",
       "description": "Açıklama",
       "close": "Kapat"
     },

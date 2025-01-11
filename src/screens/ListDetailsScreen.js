@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, Platform, Image, Clipboard } from 'react-native';
 import { Text, IconButton, FAB, Card, Portal, Modal, TextInput, Button, Chip, Searchbar } from 'react-native-paper';
-import { getListItems, updateListItems } from '../utils/storage';
+import { getListItems, updateListItems, archiveList, deleteList } from '../utils/storage';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   interpolateColor,
 } from 'react-native-reanimated';
+import Lottie from 'lottie-react-native';
 
 // Ana kategorilere göre alt etiketler
 const SUB_TAGS = {
@@ -41,7 +42,7 @@ const SUB_TAGS = {
     { id: 'tops', label: 'Tops', icon: 'tshirt-crew' },
     { id: 'bottoms', label: 'Bottoms', icon: 'archive' },
     { id: 'dresses', label: 'Dresses', icon: 'hanger' },
-    { id: 'outerwear', label: 'Outerwear', icon: 'jacket' },
+    { id: 'outerwear', label: 'Outerwear', icon: 'coat-rack' },
     { id: 'shoes', label: 'Shoes', icon: 'shoe-heel' },
     { id: 'accessories', label: 'Accessories', icon: 'glasses' },
     { id: 'activewear', label: 'Activewear', icon: 'run' },
@@ -59,7 +60,7 @@ const SUB_TAGS = {
   ],
   health: [
     { id: 'medicine', label: 'Medicine', icon: 'pill' },
-    { id: 'vitamins', label: 'Vitamins', icon: 'medication' },
+    { id: 'vitamins', label: 'Vitamins', icon: 'bottle-tonic-plus' },
     { id: 'personal_care', label: 'Personal Care', icon: 'face-man-shimmer' },
     { id: 'skincare', label: 'Skincare', icon: 'lotion' },
     { id: 'haircare', label: 'Hair Care', icon: 'hair-dryer' },
@@ -72,7 +73,7 @@ const SUB_TAGS = {
     { id: 'nonfiction', label: 'Non-Fiction', icon: 'book-open-page-variant' },
     { id: 'academic', label: 'Academic', icon: 'school' },
     { id: 'magazines', label: 'Magazines', icon: 'newspaper' },
-    { id: 'children', label: 'Children Books', icon: 'book-child' },
+    { id: 'children', label: 'Children Books', icon: 'book-education' },
     { id: 'stationery', label: 'Stationery', icon: 'pencil' },
     { id: 'art_supplies', label: 'Art Supplies', icon: 'palette' },
     { id: 'office_supplies', label: 'Office Supplies', icon: 'office-building' },
@@ -110,8 +111,8 @@ const SUB_TAGS = {
   kids: [
     { id: 'toys', label: 'Toys', icon: 'toy-brick' },
     { id: 'clothing', label: 'Clothing', icon: 'hanger' },
-    { id: 'school', label: 'School Supplies', icon: 'backpack' },
-    { id: 'books', label: 'Books', icon: 'book-child' },
+    { id: 'school', label: 'School Supplies', icon: 'school' },
+    { id: 'books', label: 'Books', icon: 'book-open-variant' },
     { id: 'baby_care', label: 'Baby Care', icon: 'baby' },
     { id: 'games', label: 'Games', icon: 'gamepad-variant' },
     { id: 'art_craft', label: 'Art & Craft', icon: 'palette' },
@@ -131,11 +132,11 @@ const SUB_TAGS = {
     { id: 'plants', label: 'Plants', icon: 'flower' },
     { id: 'tools', label: 'Tools', icon: 'shovel' },
     { id: 'furniture', label: 'Outdoor Furniture', icon: 'chair-rolling' },
-    { id: 'decor', label: 'Garden Decor', icon: 'lantern' },
+    { id: 'decor', label: 'Garden Decor', icon: 'lighthouse' },
     { id: 'lighting', label: 'Outdoor Lighting', icon: 'outdoor-lamp' },
     { id: 'soil', label: 'Soil & Fertilizers', icon: 'leaf' },
     { id: 'pots', label: 'Pots & Planters', icon: 'pot' },
-    { id: 'equipment', label: 'Equipment', icon: 'lawn-mower' },
+    { id: 'equipment', label: 'Equipment', icon: 'tools' },
   ],
 };
 
@@ -296,6 +297,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
     image: editingItem?.image || null,
     description: editingItem?.description || '',
     subTag: editingItem?.subTag || null,
+    price: editingItem?.price ? editingItem.price.toString() : '',
   });
 
   const handleChange = useCallback((field, value) => {
@@ -316,6 +318,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
       image: formData.image,
       description: formData.description.trim(),
       subTag: formData.subTag,
+      price: formData.price ? parseFloat(formData.price) : null,
     };
 
     onSubmit(item);
@@ -471,6 +474,22 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
           />
         </View>
 
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>{t('listDetails.addItem.price.label')}</Text>
+          <TextInput
+            value={formData.price}
+            onChangeText={(value) => handleChange('price', value)}
+            style={[styles.input, { backgroundColor: theme.surface }]}
+            placeholder={t('listDetails.addItem.price.placeholder')}
+            placeholderTextColor="#999"
+            mode="outlined"
+            outlineColor={theme.border}
+            activeOutlineColor={theme.primary}
+            keyboardType="decimal-pad"
+            left={<TextInput.Affix text="₺" />}
+          />
+        </View>
+
         {subTags && subTags.length > 0 && (
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>{t('listDetails.addItem.category')}</Text>
@@ -541,6 +560,37 @@ const ListDetailsScreen = ({ route, navigation }) => {
   const [selectedSubTags, setSelectedSubTags] = useState([]);
   const [filteredItems, setFilteredItems] = useState([]);
   const theme = getTagTheme(tag?.id);
+  const [showCompletionModal, setShowCompletionModal] = useState(false);
+  const confettiAnimation = useRef(null);
+
+  useEffect(() => {
+    const allChecked = filteredItems.length > 0 && filteredItems.every(item => item.checked);
+    if (allChecked) {
+      setShowCompletionModal(true);
+      setTimeout(() => {
+        if (confettiAnimation.current) {
+          confettiAnimation.current.reset();
+          confettiAnimation.current.play();
+        }
+      }, 100);
+    }
+  }, [filteredItems]);
+
+  const calculatePrices = useCallback(() => {
+    const checkedTotal = filteredItems.reduce((total, item) => {
+      return total + (item.checked ? (item.price || 0) : 0);
+    }, 0);
+
+    const uncheckedTotal = filteredItems.reduce((total, item) => {
+      return total + (!item.checked ? (item.price || 0) : 0);
+    }, 0);
+
+    return {
+      checkedTotal,
+      uncheckedTotal,
+      total: checkedTotal + uncheckedTotal
+    };
+  }, [filteredItems]);
 
   useEffect(() => {
     loadItems();
@@ -673,6 +723,21 @@ const ListDetailsScreen = ({ route, navigation }) => {
     }
   };
 
+  const handleArchiveList = async () => {
+    await archiveList(listId);
+    navigation.goBack();
+  };
+
+  const handleClearAndReuse = async () => {
+    const clearedItems = items.map(item => ({
+      ...item,
+      checked: false
+    }));
+    await updateListItems(listId, clearedItems);
+    setItems(clearedItems);
+    setShowCompletionModal(false);
+  };
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.pastel }]}>
       <View style={[styles.header, { backgroundColor: theme.pastel }]}>
@@ -784,7 +849,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
         <ScrollView 
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.scrollViewContent}
+          contentContainerStyle={[styles.scrollViewContent, { paddingBottom: 80 }]}
         >
           <GestureHandlerRootView>
             {filteredItems.map((item) => (
@@ -846,6 +911,11 @@ const ListDetailsScreen = ({ route, navigation }) => {
                           </View>
                           <View style={styles.quantityContainer}>
                             <Text style={[styles.quantity, { color: tag?.color }]}>{item.quantity}</Text>
+                            {item.price && (
+                              <Text style={[styles.price, { color: tag?.color }]}>
+                                ₺{item.price.toFixed(2)}
+                              </Text>
+                            )}
                           </View>
                         </View>
                       </Card.Content>
@@ -910,6 +980,11 @@ const ListDetailsScreen = ({ route, navigation }) => {
                         <Text style={styles.descriptionText}>{selectedItem.description}</Text>
                       </>
                     )}
+                    {selectedItem.price && (
+                      <Text style={[styles.detailsQuantity, { color: tag?.color }]}>
+                        {t('listDetails.itemDetails.price')}: ₺{selectedItem.price.toFixed(2)}
+                      </Text>
+                    )}
                   </Card.Content>
                   <Card.Actions style={styles.detailsCardActions}>
                     <Button
@@ -928,6 +1003,62 @@ const ListDetailsScreen = ({ route, navigation }) => {
         </Modal>
       </Portal>
 
+      <Portal>
+        <Modal
+          visible={showCompletionModal}
+          onDismiss={() => setShowCompletionModal(false)}
+          contentContainerStyle={styles.completionModalContainer}>
+          <View style={styles.completionContent}>
+            <Lottie
+              ref={confettiAnimation}
+              source={require('../assets/animations/confetti-new.json')}
+              style={[styles.confetti, { backgroundColor: 'transparent' }]}
+              autoPlay={false}
+              loop={false}
+              speed={1}
+            />
+            <MaterialCommunityIcons
+              name="check-circle-outline"
+              size={64}
+              color={theme.primary}
+            />
+            <Text style={styles.completionTitle}>{t('listDetails.completion.title')}</Text>
+            <Text style={styles.completionSubtitle}>{t('listDetails.completion.subtitle')}</Text>
+            
+            <View style={styles.completionActions}>
+              <Button
+                mode="contained"
+                onPress={handleArchiveList}
+                style={[styles.completionButton, { backgroundColor: theme.primary }]}
+                textColor="#FFF8E3"
+              >
+                <MaterialCommunityIcons name="archive-outline" size={20} />
+                {t('listDetails.completion.archive')}
+              </Button>
+              
+              <Button
+                mode="contained"
+                onPress={handleClearAndReuse}
+                style={[styles.completionButton, { backgroundColor: theme.primary }]}
+                textColor="#FFF8E3"
+              >
+                <MaterialCommunityIcons name="refresh" size={20} />
+                {t('listDetails.completion.reuse')}
+              </Button>
+              
+              <Button
+                mode="outlined"
+                onPress={() => setShowCompletionModal(false)}
+                style={styles.completionButton}
+                textColor={theme.primary}
+              >
+                {t('listDetails.completion.continue')}
+              </Button>
+            </View>
+          </View>
+        </Modal>
+      </Portal>
+
       <FAB
         icon="plus"
         style={[styles.fab, { backgroundColor: theme.primary }]}
@@ -937,6 +1068,34 @@ const ListDetailsScreen = ({ route, navigation }) => {
         }}
         color="#FFF8E3"
       />
+
+      <View style={[styles.totalPriceContainer, { backgroundColor: theme.primary }]}>
+        <View style={styles.priceRow}>
+          <View style={styles.priceGroup}>
+            <View style={styles.priceItem}>
+              <MaterialCommunityIcons
+                name="checkbox-marked-circle-outline"
+                size={16}
+                color="#FFF8E3"
+              />
+              <Text style={styles.priceValue}>₺{calculatePrices().checkedTotal.toFixed(2)}</Text>
+            </View>
+            <View style={styles.separator} />
+            <View style={styles.priceItem}>
+              <MaterialCommunityIcons
+                name="checkbox-blank-circle-outline"
+                size={16}
+                color="#FFF8E3"
+              />
+              <Text style={styles.priceValue}>₺{calculatePrices().uncheckedTotal.toFixed(2)}</Text>
+            </View>
+          </View>
+          <View style={styles.totalPrice}>
+            <Text style={styles.totalPriceLabel}>{t('listDetails.totalPrice')}</Text>
+            <Text style={styles.totalPriceValue}>₺{calculatePrices().total.toFixed(2)}</Text>
+          </View>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -1113,7 +1272,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     margin: 16,
     right: 0,
-    bottom: 16,
+    bottom: 60,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: {
@@ -1349,6 +1508,115 @@ const styles = StyleSheet.create({
   submitButton: {
     borderRadius: 12,
     paddingVertical: 6,
+  },
+  price: {
+    fontSize: 12,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  totalPriceContainer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#E6A4B4',
+    paddingVertical: 12,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 8,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  priceGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  priceItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  separator: {
+    width: 1,
+    height: 20,
+    backgroundColor: 'rgba(255, 248, 227, 0.2)',
+  },
+  priceValue: {
+    fontSize: 14,
+    color: '#FFF8E3',
+    fontWeight: '600',
+  },
+  totalPrice: {
+    alignItems: 'flex-end',
+  },
+  totalPriceLabel: {
+    fontSize: 12,
+    color: '#FFF8E3',
+    fontWeight: '500',
+    opacity: 0.8,
+  },
+  totalPriceValue: {
+    fontSize: 16,
+    color: '#FFF8E3',
+    fontWeight: '700',
+  },
+  completionModalContainer: {
+    backgroundColor: '#FFF8E3',
+    margin: 20,
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  completionContent: {
+    width: '100%',
+    alignItems: 'center',
+    paddingVertical: 20,
+  },
+  confetti: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    top: -100,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    pointerEvents: 'none',
+  },
+  completionTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#333',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  completionSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 8,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  completionActions: {
+    width: '100%',
+    gap: 12,
+  },
+  completionButton: {
+    width: '100%',
+    borderRadius: 12,
   },
 });
 
