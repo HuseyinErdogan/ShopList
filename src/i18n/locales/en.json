@@ -1,6 +1,6 @@
 {
   "home": {
-    "title": "My Shopping Lists",
+    "title": "My Lists",
     "searchPlaceholder": "Search lists...",
     "sortMenu": {
       "byDate": "Sort by Date",
@@ -8,7 +8,7 @@
       "byItems": "Sort by Items"
     },
     "tags": {
-      "all": "All Categories",
+      "all": "All Lists",
       "grocery": "Groceries",
       "home": "Home & Living",
       "gift": "Gifts",
@@ -147,9 +147,9 @@
       }
     },
     "empty": {
-      "noLists": "No Shopping Lists",
+      "noLists": "No Lists Yet",
       "createFirst": "Create your first shopping list!",
-      "noMatchingLists": "No matching lists found",
+      "noMatchingLists": "No Matching Lists",
       "tryDifferent": "Try a different search term or filter"
     },
     "list": {
@@ -157,9 +157,9 @@
     },
     "deleteDialog": {
       "title": "Delete List",
-      "message": "Are you sure you want to delete this list?",
-      "delete": "Delete",
-      "cancel": "Cancel"
+      "message": "Are you sure you want to delete this list? This action cannot be undone.",
+      "cancel": "Cancel",
+      "delete": "Delete"
     }
   },
   "navigation": {
@@ -170,37 +170,37 @@
     "title": "Create New List",
     "listTitle": {
       "label": "List Title",
-      "placeholder": "Enter list title"
+      "placeholder": "Enter list title..."
     },
     "category": {
-      "label": "Category (Optional)"
+      "label": "Category"
     },
     "note": {
       "label": "Note (Optional)",
-      "placeholder": "Add a note about your list"
+      "placeholder": "Add a note about this list..."
     },
     "button": "Create List",
     "errors": {
       "titleRequired": "Please enter a list title",
-      "createFailed": "Failed to create list. Please try again."
+      "createFailed": "Failed to create list"
     }
   },
   "listDetails": {
     "searchPlaceholder": "Search items...",
-    "totalPrice": "Total Price",
+    "totalPrice": "Total",
     "boughtItems": "Bought Items",
     "remainingItems": "Remaining Items",
     "completion": {
-      "title": "Congratulations!",
-      "subtitle": "You've completed all items in your list. What would you like to do next?",
+      "title": "List Completed!",
+      "subtitle": "All items have been checked off. What would you like to do?",
       "archive": "Archive List",
       "reuse": "Clear & Reuse",
-      "continue": "Continue"
+      "continue": "Continue Shopping"
     },
     "empty": {
       "noItems": "No Items Yet",
-      "addFirst": "Add your first item to the list!",
-      "noMatchingItems": "No matching items found",
+      "addFirst": "Add your first item to this list!",
+      "noMatchingItems": "No Matching Items",
       "tryDifferent": "Try a different search term or filter"
     },
     "addItem": {
@@ -209,16 +209,16 @@
       "addPhoto": "Add Photo",
       "itemName": {
         "label": "Item Name",
-        "placeholder": "Enter item name"
+        "placeholder": "Enter item name..."
       },
       "quantity": "Quantity",
       "price": {
         "label": "Price",
-        "placeholder": "Enter price"
+        "placeholder": "Enter price..."
       },
       "description": {
         "label": "Description",
-        "placeholder": "Add notes or description"
+        "placeholder": "Add a note about this item..."
       },
       "category": "Category",
       "button": {
@@ -234,78 +234,98 @@
     },
     "share": {
       "copied": "List copied to clipboard!",
-      "failed": "Failed to copy list to clipboard"
+      "failed": "Failed to copy list"
     }
   },
   "settings": {
     "header": {
-      "title": "Preferences",
+      "title": "Settings",
       "subtitle": "Customize your shopping experience"
+    },
+    "lists": {
+      "title": "Lists",
+      "archive": {
+        "title": "Archived Lists",
+        "description": "View and manage your archived shopping lists"
+      }
     },
     "premium": {
       "title": "Premium Features",
       "comingSoon": "Coming Soon",
       "darkMode": {
         "title": "Dark Mode",
-        "description": "Personalize your app with a sleek dark theme"
+        "description": "Switch to dark theme for comfortable night use"
       },
       "priceTracking": {
         "title": "Price Tracking",
-        "description": "Track prices and view total expenses for each list"
+        "description": "Track price changes and get the best deals"
       },
       "receiptScanner": {
-        "title": "Smart Receipt Scanner",
-        "description": "Scan receipts to automatically add items and prices"
+        "title": "Receipt Scanner",
+        "description": "Create lists by scanning your receipts"
       },
       "smartCategories": {
         "title": "Smart Categories",
-        "description": "AI-powered automatic item categorization"
+        "description": "Auto-categorize items using AI"
       },
       "analytics": {
         "title": "Shopping Analytics",
-        "description": "Get insights into your shopping patterns and expenses"
+        "description": "Get insights about your shopping habits"
       },
       "cloudSync": {
         "title": "Cloud Sync",
-        "description": "Sync your lists across all your devices"
+        "description": "Sync your lists across all devices"
       },
       "collaboration": {
-        "title": "Collaborative Lists",
-        "description": "Share and edit lists with family and friends"
+        "title": "Shared Lists",
+        "description": "Share and collaborate on lists with family"
       },
       "budget": {
-        "title": "Budget Planning",
-        "description": "Set budgets and get alerts for overspending"
+        "title": "Budget Tracking",
+        "description": "Set budgets and track your spending"
       },
       "suggestions": {
         "title": "Smart Suggestions",
-        "description": "Get personalized item and store recommendations"
+        "description": "Get personalized item suggestions"
       }
     },
     "data": {
       "title": "Data Management",
       "export": {
-        "title": "Export Data",
-        "description": "Export your lists as CSV"
+        "title": "Export Lists",
+        "description": "Export your lists as CSV file"
       },
       "import": {
-        "title": "Import Data",
-        "description": "Import lists from CSV"
+        "title": "Import Lists",
+        "description": "Import lists from CSV file"
       }
     },
     "about": {
       "title": "About",
-      "version": "Version"
+      "version": "App Version"
     },
     "danger": {
       "title": "Danger Zone",
       "clearData": "Clear All Data",
       "dialog": {
-        "title": "Are you sure?",
-        "message": "This action will permanently delete all your shopping lists and data. This cannot be undone.",
+        "title": "Clear All Data",
+        "message": "Are you sure you want to clear all data? This action cannot be undone.",
         "cancel": "Cancel",
-        "confirm": "Delete All Data"
+        "confirm": "Clear All"
       }
+    }
+  },
+  "archived": {
+    "title": "Archived Lists",
+    "searchPlaceholder": "Search archived lists...",
+    "list": {
+      "items": "items"
+    },
+    "empty": {
+      "noLists": "No Archived Lists",
+      "archiveFirst": "Your archived lists will appear here",
+      "noMatchingLists": "No Matching Lists",
+      "tryDifferent": "Try a different search term"
     }
   }
 } 

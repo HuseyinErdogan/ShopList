@@ -12,6 +12,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import CreateListScreen from './src/screens/CreateListScreen';
 import ListDetailsScreen from './src/screens/ListDetailsScreen';
+import ArchivedListsScreen from './src/screens/ArchivedListsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -41,6 +42,19 @@ function HomeStack() {
       <Stack.Screen name="HomeMain" component={HomeScreen} />
       <Stack.Screen name="CreateList" component={CreateListScreen} />
       <Stack.Screen name="ListDetails" component={ListDetailsScreen} />
+    </Stack.Navigator>
+  );
+}
+
+function SettingsStack() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="SettingsMain" component={SettingsScreen} />
+      <Stack.Screen name="ArchivedLists" component={ArchivedListsScreen} />
     </Stack.Navigator>
   );
 }
@@ -98,9 +112,10 @@ function AppNavigator() {
       />
       <Tab.Screen 
         name="Settings" 
-        component={SettingsScreen}
+        component={SettingsStack}
         options={{
           title: t('navigation.settings'),
+          headerShown: false,
         }}
       />
     </Tab.Navigator>

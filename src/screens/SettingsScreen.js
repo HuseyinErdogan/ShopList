@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Platform, Alert, ActivityIndicator } from 'react-native';
-import { Text, Switch, List, Divider, Button, useTheme, Badge, Dialog, Portal } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Platform, Alert, ActivityIndicator, SafeAreaView } from 'react-native';
+import { Text, Switch, List, Divider, Button, useTheme, Portal, Dialog } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -78,7 +78,7 @@ const SUB_TAGS = {
   ],
 };
 
-const SettingsScreen = () => {
+const SettingsScreen = ({ navigation }) => {
   const { t } = useTranslation();
   const [darkMode, setDarkMode] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -302,127 +302,91 @@ const SettingsScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {loading && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#E6A4B4" />
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        {loading && (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#E6A4B4" />
+          </View>
+        )}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>{t('settings.header.title')}</Text>
+          <Text style={styles.subHeaderText}>{t('settings.header.subtitle')}</Text>
         </View>
-      )}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>{t('settings.header.title')}</Text>
-        <Text style={styles.subHeaderText}>{t('settings.header.subtitle')}</Text>
-      </View>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeaderContainer}>
-          <Text style={styles.sectionTitle}>{t('settings.premium.title')}</Text>
-          <Badge style={styles.comingSoonBadge}>{t('settings.premium.comingSoon')}</Badge>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.lists.title')}</Text>
+          <List.Item
+            title={t('settings.lists.archive.title')}
+            description={t('settings.lists.archive.description')}
+            left={props => <List.Icon {...props} icon="archive" color="#E6A4B4" />}
+            onPress={() => navigation.navigate('ArchivedLists')}
+          />
         </View>
-        <List.Item
-          title={t('settings.premium.darkMode.title')}
-          description={t('settings.premium.darkMode.description')}
-          left={props => <List.Icon {...props} icon="theme-light-dark" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.priceTracking.title')}
-          description={t('settings.premium.priceTracking.description')}
-          left={props => <List.Icon {...props} icon="currency-usd" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.receiptScanner.title')}
-          description={t('settings.premium.receiptScanner.description')}
-          left={props => <List.Icon {...props} icon="camera" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.smartCategories.title')}
-          description={t('settings.premium.smartCategories.description')}
-          left={props => <List.Icon {...props} icon="tag-multiple" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.analytics.title')}
-          description={t('settings.premium.analytics.description')}
-          left={props => <List.Icon {...props} icon="chart-line" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.cloudSync.title')}
-          description={t('settings.premium.cloudSync.description')}
-          left={props => <List.Icon {...props} icon="cloud-sync" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.collaboration.title')}
-          description={t('settings.premium.collaboration.description')}
-          left={props => <List.Icon {...props} icon="account-group" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.budget.title')}
-          description={t('settings.premium.budget.description')}
-          left={props => <List.Icon {...props} icon="wallet" color="#E6A4B4" />}
-        />
-        <List.Item
-          title={t('settings.premium.suggestions.title')}
-          description={t('settings.premium.suggestions.description')}
-          left={props => <List.Icon {...props} icon="lightbulb" color="#E6A4B4" />}
-        />
-      </View>
 
-      <Divider style={styles.divider} />
+        <Divider style={styles.divider} />
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.data.title')}</Text>
-        <List.Item
-          title={t('settings.data.export.title')}
-          description={t('settings.data.export.description')}
-          left={props => <List.Icon {...props} icon="export" color="#E6A4B4" />}
-          onPress={exportData}
-        />
-        <List.Item
-          title={t('settings.data.import.title')}
-          description={t('settings.data.import.description')}
-          left={props => <List.Icon {...props} icon="import" color="#E6A4B4" />}
-          onPress={importData}
-        />
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.data.title')}</Text>
+          <List.Item
+            title={t('settings.data.export.title')}
+            description={t('settings.data.export.description')}
+            left={props => <List.Icon {...props} icon="export" color="#E6A4B4" />}
+            onPress={exportData}
+          />
+          <List.Item
+            title={t('settings.data.import.title')}
+            description={t('settings.data.import.description')}
+            left={props => <List.Icon {...props} icon="import" color="#E6A4B4" />}
+            onPress={importData}
+          />
+        </View>
 
-      <Divider style={styles.divider} />
+        <Divider style={styles.divider} />
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>{t('settings.about.title')}</Text>
-        <List.Item
-          title={t('settings.about.version')}
-          description="1.0.0"
-          left={props => <List.Icon {...props} icon="information" color="#E6A4B4" />}
-        />
-      </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.about.title')}</Text>
+          <List.Item
+            title={t('settings.about.version')}
+            description="1.0.0"
+            left={props => <List.Icon {...props} icon="information" color="#E6A4B4" />}
+          />
+        </View>
 
-      <View style={styles.dangerZone}>
-        <Text style={styles.dangerTitle}>{t('settings.danger.title')}</Text>
-        <Button
-          mode="contained"
-          onPress={() => setShowConfirmDialog(true)}
-          style={styles.dangerButton}
-          labelStyle={styles.dangerButtonText}
-        >
-          {t('settings.danger.clearData')}
-        </Button>
-      </View>
+        <View style={styles.dangerZone}>
+          <Text style={styles.dangerTitle}>{t('settings.danger.title')}</Text>
+          <Button
+            mode="contained"
+            onPress={() => setShowConfirmDialog(true)}
+            style={styles.dangerButton}
+            labelStyle={styles.dangerButtonText}
+          >
+            {t('settings.danger.clearData')}
+          </Button>
+        </View>
 
-      <Portal>
-        <Dialog visible={showConfirmDialog} onDismiss={() => setShowConfirmDialog(false)}>
-          <Dialog.Title>{t('settings.danger.dialog.title')}</Dialog.Title>
-          <Dialog.Content>
-            <Text>{t('settings.danger.dialog.message')}</Text>
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setShowConfirmDialog(false)}>{t('settings.danger.dialog.cancel')}</Button>
-            <Button onPress={clearAllData} textColor="#DC2626">{t('settings.danger.dialog.confirm')}</Button>
-          </Dialog.Actions>
-        </Dialog>
-      </Portal>
-    </ScrollView>
+        <Portal>
+          <Dialog visible={showConfirmDialog} onDismiss={() => setShowConfirmDialog(false)}>
+            <Dialog.Title>{t('settings.danger.dialog.title')}</Dialog.Title>
+            <Dialog.Content>
+              <Text>{t('settings.danger.dialog.message')}</Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setShowConfirmDialog(false)}>{t('settings.danger.dialog.cancel')}</Button>
+              <Button onPress={clearAllData} textColor="#DC2626">{t('settings.danger.dialog.confirm')}</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5EEE6',
+  },
   container: {
     flex: 1,
     backgroundColor: '#F5EEE6',
@@ -430,6 +394,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 20,
     backgroundColor: '#F5EEE6',
+    paddingTop: Platform.OS === 'ios' ? 0 : 20,
   },
   headerText: {
     fontSize: 28,
@@ -456,21 +421,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  sectionHeaderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    gap: 8,
-  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#333',
-  },
-  comingSoonBadge: {
-    backgroundColor: '#E6A4B4',
-    fontSize: 12,
-    color: '#FFF8E3',
   },
   divider: {
     height: 1,

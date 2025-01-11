@@ -1,6 +1,6 @@
 {
   "home": {
-    "title": "Alışveriş Listelerim",
+    "title": "Listelerim",
     "searchPlaceholder": "Liste ara...",
     "sortMenu": {
       "byDate": "Tarihe Göre Sırala",
@@ -8,7 +8,7 @@
       "byItems": "Ürün Sayısına Göre Sırala"
     },
     "tags": {
-      "all": "Tüm Kategoriler",
+      "all": "Tüm Listeler",
       "grocery": "Market",
       "home": "Ev & Yaşam",
       "gift": "Hediyeler",
@@ -147,9 +147,9 @@
       }
     },
     "empty": {
-      "noLists": "Alışveriş Listesi Yok",
+      "noLists": "Henüz Liste Yok",
       "createFirst": "İlk alışveriş listeni oluştur!",
-      "noMatchingLists": "Eşleşen liste bulunamadı",
+      "noMatchingLists": "Eşleşen Liste Bulunamadı",
       "tryDifferent": "Farklı bir arama terimi veya filtre dene"
     },
     "list": {
@@ -157,9 +157,9 @@
     },
     "deleteDialog": {
       "title": "Listeyi Sil",
-      "message": "Bu listeyi silmek istediğinizden emin misiniz?",
-      "delete": "Sil",
-      "cancel": "İptal"
+      "message": "Bu listeyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+      "cancel": "İptal",
+      "delete": "Sil"
     }
   },
   "navigation": {
@@ -170,37 +170,37 @@
     "title": "Yeni Liste Oluştur",
     "listTitle": {
       "label": "Liste Adı",
-      "placeholder": "Liste adını girin"
+      "placeholder": "Liste adını girin..."
     },
     "category": {
-      "label": "Kategori (İsteğe bağlı)"
+      "label": "Kategori"
     },
     "note": {
-      "label": "Not (İsteğe bağlı)",
-      "placeholder": "Listeniz hakkında not ekleyin"
+      "label": "Not (İsteğe Bağlı)",
+      "placeholder": "Bu liste hakkında not ekleyin..."
     },
     "button": "Liste Oluştur",
     "errors": {
       "titleRequired": "Lütfen bir liste adı girin",
-      "createFailed": "Liste oluşturulamadı. Lütfen tekrar deneyin."
+      "createFailed": "Liste oluşturulamadı"
     }
   },
   "listDetails": {
     "searchPlaceholder": "Ürün ara...",
-    "totalPrice": "Toplam Fiyat",
+    "totalPrice": "Toplam",
     "boughtItems": "Alınan Ürünler",
     "remainingItems": "Kalan Ürünler",
     "completion": {
-      "title": "Tebrikler!",
-      "subtitle": "Listedeki tüm ürünleri tamamladınız. Şimdi ne yapmak istersiniz?",
+      "title": "Liste Tamamlandı!",
+      "subtitle": "Tüm ürünler işaretlendi. Ne yapmak istersiniz?",
       "archive": "Listeyi Arşivle",
-      "reuse": "Temizle ve Yeniden Kullan",
-      "continue": "Devam Et"
+      "reuse": "Temizle & Yeniden Kullan",
+      "continue": "Alışverişe Devam Et"
     },
     "empty": {
       "noItems": "Henüz Ürün Yok",
-      "addFirst": "Listeye ilk ürününü ekle!",
-      "noMatchingItems": "Eşleşen ürün bulunamadı",
+      "addFirst": "Bu listeye ilk ürününü ekle!",
+      "noMatchingItems": "Eşleşen Ürün Bulunamadı",
       "tryDifferent": "Farklı bir arama terimi veya filtre dene"
     },
     "addItem": {
@@ -209,16 +209,16 @@
       "addPhoto": "Fotoğraf Ekle",
       "itemName": {
         "label": "Ürün Adı",
-        "placeholder": "Ürün adını girin"
+        "placeholder": "Ürün adını girin..."
       },
       "quantity": "Miktar",
       "price": {
         "label": "Fiyat",
-        "placeholder": "Fiyat girin"
+        "placeholder": "Fiyat girin..."
       },
       "description": {
         "label": "Açıklama",
-        "placeholder": "Not veya açıklama ekleyin"
+        "placeholder": "Bu ürün hakkında not ekleyin..."
       },
       "category": "Kategori",
       "button": {
@@ -234,78 +234,98 @@
     },
     "share": {
       "copied": "Liste panoya kopyalandı!",
-      "failed": "Liste panoya kopyalanamadı"
+      "failed": "Liste kopyalanamadı"
     }
   },
   "settings": {
     "header": {
-      "title": "Tercihler",
-      "subtitle": "Alışveriş deneyiminizi özelleştirin"
+      "title": "Ayarlar",
+      "subtitle": "Alışveriş deneyimini özelleştir"
+    },
+    "lists": {
+      "title": "Listeler",
+      "archive": {
+        "title": "Arşivlenmiş Listeler",
+        "description": "Arşivlenmiş alışveriş listelerini görüntüle ve yönet"
+      }
     },
     "premium": {
       "title": "Premium Özellikler",
       "comingSoon": "Yakında",
       "darkMode": {
         "title": "Karanlık Mod",
-        "description": "Uygulamanızı şık bir karanlık tema ile kişiselleştirin"
+        "description": "Gece kullanımı için karanlık temaya geç"
       },
       "priceTracking": {
         "title": "Fiyat Takibi",
-        "description": "Her liste için fiyatları takip edin ve toplam harcamaları görüntüleyin"
+        "description": "Fiyat değişimlerini takip et ve en iyi fırsatları yakala"
       },
       "receiptScanner": {
-        "title": "Akıllı Fiş Tarayıcı",
-        "description": "Fişleri tarayarak ürünleri ve fiyatları otomatik olarak ekleyin"
+        "title": "Fiş Tarayıcı",
+        "description": "Fişleri tarayarak liste oluştur"
       },
       "smartCategories": {
         "title": "Akıllı Kategoriler",
-        "description": "Yapay zeka destekli otomatik ürün kategorizasyonu"
+        "description": "Yapay zeka ile ürünleri otomatik kategorize et"
       },
       "analytics": {
-        "title": "Alışveriş Analitiği",
-        "description": "Alışveriş alışkanlıklarınız ve harcamalarınız hakkında bilgi edinin"
+        "title": "Alışveriş Analizi",
+        "description": "Alışveriş alışkanlıklarını analiz et"
       },
       "cloudSync": {
         "title": "Bulut Senkronizasyonu",
-        "description": "Listelerinizi tüm cihazlarınızda senkronize edin"
+        "description": "Listelerini tüm cihazlarında senkronize et"
       },
       "collaboration": {
-        "title": "İşbirlikçi Listeler",
-        "description": "Listelerinizi aile ve arkadaşlarınızla paylaşın ve düzenleyin"
+        "title": "Paylaşımlı Listeler",
+        "description": "Listeleri ailenle paylaş ve birlikte düzenle"
       },
       "budget": {
-        "title": "Bütçe Planlaması",
-        "description": "Bütçe belirleyin ve aşırı harcama için uyarılar alın"
+        "title": "Bütçe Takibi",
+        "description": "Bütçe belirle ve harcamalarını takip et"
       },
       "suggestions": {
         "title": "Akıllı Öneriler",
-        "description": "Kişiselleştirilmiş ürün ve mağaza önerileri alın"
+        "description": "Kişiselleştirilmiş ürün önerileri al"
       }
     },
     "data": {
       "title": "Veri Yönetimi",
       "export": {
-        "title": "Verileri Dışa Aktar",
-        "description": "Listelerinizi CSV olarak dışa aktarın"
+        "title": "Listeleri Dışa Aktar",
+        "description": "Listelerini CSV dosyası olarak dışa aktar"
       },
       "import": {
-        "title": "Verileri İçe Aktar",
-        "description": "CSV'den listeleri içe aktarın"
+        "title": "Listeleri İçe Aktar",
+        "description": "CSV dosyasından liste içe aktar"
       }
     },
     "about": {
       "title": "Hakkında",
-      "version": "Versiyon"
+      "version": "Uygulama Sürümü"
     },
     "danger": {
       "title": "Tehlikeli Bölge",
       "clearData": "Tüm Verileri Temizle",
       "dialog": {
-        "title": "Emin misiniz?",
-        "message": "Bu işlem tüm alışveriş listelerinizi ve verilerinizi kalıcı olarak silecektir. Bu işlem geri alınamaz.",
+        "title": "Tüm Verileri Temizle",
+        "message": "Tüm verileri temizlemek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
         "cancel": "İptal",
-        "confirm": "Tüm Verileri Sil"
+        "confirm": "Temizle"
       }
+    }
+  },
+  "archived": {
+    "title": "Arşivlenmiş Listeler",
+    "searchPlaceholder": "Arşivlenmiş listelerde ara...",
+    "list": {
+      "items": "ürün"
+    },
+    "empty": {
+      "noLists": "Arşivlenmiş Liste Yok",
+      "archiveFirst": "Arşivlediğin listeler burada görünecek",
+      "noMatchingLists": "Eşleşen Liste Bulunamadı",
+      "tryDifferent": "Farklı bir arama terimi dene"
     }
   }
 } 

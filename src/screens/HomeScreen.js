@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, Platform } from 'react-native';
 import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu, Dialog, Button } from 'react-native-paper';
-import { getLists, deleteList } from '../utils/storage';
+import { getLists, deleteList, calculateListTotal } from '../utils/storage';
+import { formatPrice, getCurrencySymbol } from '../utils/currency';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 
@@ -150,8 +151,23 @@ const HomeScreen = ({ navigation }) => {
 
 
   const loadLists = async () => {
-    const lists = await getLists();
-    setShoppingLists(lists);
+    try {
+      const lists = await getLists(false);
+      
+      // Her liste için toplam fiyatı hesapla
+      const listsWithTotals = await Promise.all(lists.map(async (list) => {
+        const total = await calculateListTotal(list.id);
+        return {
+          ...list,
+          totalPrice: total
+        };
+      }));
+      
+      setShoppingLists(listsWithTotals);
+    } catch (error) {
+      console.error('Error loading lists:', error);
+      setShoppingLists([]);
+    }
   };
 
   const filterAndSortLists = () => {
@@ -382,17 +398,29 @@ const HomeScreen = ({ navigation }) => {
                   </View>
                   <View style={styles.cardDetails}>
                     <Text style={styles.cardDate}>{formatDate(list.createdAt)}</Text>
-                    <View style={styles.itemCountContainer}>
-                      <IconButton
-                        icon="shopping-outline"
-                        size={16}
-                        color={tagColor || "#E6A4B4"}
-                        style={styles.itemCountIcon}
-                      />
-                      <Text style={[
-                        styles.itemCount,
-                        tagColor && { color: tagColor }
-                      ]}>{list.itemCount} {t('home.list.items')}</Text>
+                    <View style={styles.cardInfo}>
+                      <View style={styles.itemCountContainer}>
+                        <IconButton
+                          icon="shopping-outline"
+                          size={16}
+                          color={tagColor || "#E6A4B4"}
+                          style={styles.itemCountIcon}
+                        />
+                        <Text style={[
+                          styles.itemCount,
+                          tagColor && { color: tagColor }
+                        ]}>{list.itemCount} {t('home.list.items')}</Text>
+                      </View>
+                      {list.totalPrice > 0 && (
+                        <View style={[styles.priceContainer, { backgroundColor: 'rgba(230, 164, 180, 0.1)' }]}>
+                          <Text style={[
+                            styles.priceText,
+                            tagColor && { color: tagColor }
+                          ]}>
+                            {formatPrice(list.totalPrice)}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </Card.Content>
@@ -550,6 +578,11 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: 'rgba(230, 164, 180, 0.1)',
   },
+  cardInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   itemCountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -557,7 +590,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingRight: 8,
   },
+  priceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 12,
+    paddingRight: 8,
+  },
   itemCountIcon: {
+    margin: 0,
+  },
+  priceIcon: {
     margin: 0,
   },
   cardDate: {
@@ -566,6 +608,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   itemCount: {
+    color: '#E6A4B4',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  priceText: {
     color: '#E6A4B4',
     fontWeight: '600',
     fontSize: 14,

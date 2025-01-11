@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { View, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions, Platform, Image, Clipboard } from 'react-native';
 import { Text, IconButton, FAB, Card, Portal, Modal, TextInput, Button, Chip, Searchbar } from 'react-native-paper';
 import { getListItems, updateListItems, archiveList, deleteList } from '../utils/storage';
+import { formatPrice, getCurrencySymbol } from '../utils/currency';
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
 import * as ImagePicker from 'expo-image-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -486,7 +487,7 @@ const AddItemForm = React.memo(({ onSubmit, onClose, editingItem = null, tag, su
             outlineColor={theme.border}
             activeOutlineColor={theme.primary}
             keyboardType="decimal-pad"
-            left={<TextInput.Affix text="₺" />}
+            left={<TextInput.Affix text={getCurrencySymbol()} />}
           />
         </View>
 
@@ -562,10 +563,11 @@ const ListDetailsScreen = ({ route, navigation }) => {
   const theme = getTagTheme(tag?.id);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const confettiAnimation = useRef(null);
+  const [lastCheckedItem, setLastCheckedItem] = useState(false);
 
   useEffect(() => {
     const allChecked = filteredItems.length > 0 && filteredItems.every(item => item.checked);
-    if (allChecked) {
+    if (allChecked && lastCheckedItem) {
       setShowCompletionModal(true);
       setTimeout(() => {
         if (confettiAnimation.current) {
@@ -574,7 +576,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
         }
       }, 100);
     }
-  }, [filteredItems]);
+  }, [filteredItems, lastCheckedItem]);
 
   const calculatePrices = useCallback(() => {
     const checkedTotal = filteredItems.reduce((total, item) => {
@@ -628,6 +630,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
     const updatedItems = items.map(item => 
       item.id === id ? { ...item, checked: !item.checked } : item
     );
+    setLastCheckedItem(true);
     setItems(updatedItems);
     await updateListItems(listId, updatedItems);
   };
@@ -637,6 +640,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
       ? items.map(i => i.id === item.id ? item : i)
       : [...items, item];
     
+    setLastCheckedItem(false);
     setItems(updatedItems);
     await updateListItems(listId, updatedItems);
     setVisible(false);
@@ -733,6 +737,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
       ...item,
       checked: false
     }));
+    setLastCheckedItem(false);
     await updateListItems(listId, clearedItems);
     setItems(clearedItems);
     setShowCompletionModal(false);
@@ -913,7 +918,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                             <Text style={[styles.quantity, { color: tag?.color }]}>{item.quantity}</Text>
                             {item.price && (
                               <Text style={[styles.price, { color: tag?.color }]}>
-                                ₺{item.price.toFixed(2)}
+                                {formatPrice(item.price)}
                               </Text>
                             )}
                           </View>
@@ -982,7 +987,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                     )}
                     {selectedItem.price && (
                       <Text style={[styles.detailsQuantity, { color: tag?.color }]}>
-                        {t('listDetails.itemDetails.price')}: ₺{selectedItem.price.toFixed(2)}
+                        {t('listDetails.itemDetails.price')}: {formatPrice(selectedItem.price)}
                       </Text>
                     )}
                   </Card.Content>
@@ -1078,7 +1083,7 @@ const ListDetailsScreen = ({ route, navigation }) => {
                 size={16}
                 color="#FFF8E3"
               />
-              <Text style={styles.priceValue}>₺{calculatePrices().checkedTotal.toFixed(2)}</Text>
+              <Text style={styles.priceValue}>{formatPrice(calculatePrices().checkedTotal)}</Text>
             </View>
             <View style={styles.separator} />
             <View style={styles.priceItem}>
@@ -1087,12 +1092,12 @@ const ListDetailsScreen = ({ route, navigation }) => {
                 size={16}
                 color="#FFF8E3"
               />
-              <Text style={styles.priceValue}>₺{calculatePrices().uncheckedTotal.toFixed(2)}</Text>
+              <Text style={styles.priceValue}>{formatPrice(calculatePrices().uncheckedTotal)}</Text>
             </View>
           </View>
           <View style={styles.totalPrice}>
             <Text style={styles.totalPriceLabel}>{t('listDetails.totalPrice')}</Text>
-            <Text style={styles.totalPriceValue}>₺{calculatePrices().total.toFixed(2)}</Text>
+            <Text style={styles.totalPriceValue}>{formatPrice(calculatePrices().total)}</Text>
           </View>
         </View>
       </View>
