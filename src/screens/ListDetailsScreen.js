@@ -13,7 +13,6 @@ import Animated, {
   withSpring,
   interpolateColor,
 } from 'react-native-reanimated';
-import Lottie from 'lottie-react-native';
 
 // Ana kategorilere göre alt etiketler
 const SUB_TAGS = {
@@ -562,19 +561,12 @@ const ListDetailsScreen = ({ route, navigation }) => {
   const [filteredItems, setFilteredItems] = useState([]);
   const theme = getTagTheme(tag?.id);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
-  const confettiAnimation = useRef(null);
   const [lastCheckedItem, setLastCheckedItem] = useState(false);
 
   useEffect(() => {
     const allChecked = filteredItems.length > 0 && filteredItems.every(item => item.checked);
     if (allChecked && lastCheckedItem) {
       setShowCompletionModal(true);
-      setTimeout(() => {
-        if (confettiAnimation.current) {
-          confettiAnimation.current.reset();
-          confettiAnimation.current.play();
-        }
-      }, 100);
     }
   }, [filteredItems, lastCheckedItem]);
 
@@ -1014,14 +1006,6 @@ const ListDetailsScreen = ({ route, navigation }) => {
           onDismiss={() => setShowCompletionModal(false)}
           contentContainerStyle={styles.completionModalContainer}>
           <View style={styles.completionContent}>
-            <Lottie
-              ref={confettiAnimation}
-              source={require('../assets/animations/confetti-new.json')}
-              style={[styles.confetti, { backgroundColor: 'transparent' }]}
-              autoPlay={false}
-              loop={false}
-              speed={1}
-            />
             <MaterialCommunityIcons
               name="check-circle-outline"
               size={64}
@@ -1590,16 +1574,6 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     paddingVertical: 20,
-  },
-  confetti: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    top: -100,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    pointerEvents: 'none',
   },
   completionTitle: {
     fontSize: 24,
