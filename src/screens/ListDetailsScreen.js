@@ -40,7 +40,7 @@ const SUB_TAGS = {
   ],
   clothing: [
     { id: 'tops', label: 'Tops', icon: 'tshirt-crew' },
-    { id: 'bottoms', label: 'Bottoms', icon: 'archive' },
+    { id: 'bottoms', label: 'Bottoms', icon: 'wardrobe' },
     { id: 'dresses', label: 'Dresses', icon: 'hanger' },
     { id: 'outerwear', label: 'Outerwear', icon: 'coat-rack' },
     { id: 'shoes', label: 'Shoes', icon: 'shoe-heel' },
