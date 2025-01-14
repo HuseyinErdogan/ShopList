@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Platform, Alert, ActivityIndicator, SafeAreaView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, Platform, Alert, ActivityIndicator, SafeAreaView, Image } from 'react-native';
 import { Text, Switch, List, Divider, Button, useTheme, Portal, Dialog } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
@@ -7,6 +7,18 @@ import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
 import { getLists, getListItems, saveList, updateListItems } from '../utils/storage';
 import { useTranslation } from 'react-i18next';
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+
+// Platform specific configuration
+if (Platform.OS === 'ios') {
+  GoogleSignin.configure({
+    iosClientId: '680530724531-rer6em86iocmhmiv7ga921e99vmqq8d4.apps.googleusercontent.com',
+  });
+} else {
+  GoogleSignin.configure({
+    webClientId: '680530724531-rer6em86iocmhmiv7ga921e99vmqq8d4.apps.googleusercontent.com',
+  });
+}
 
 const TAGS = [
   { id: 'grocery', icon: 'cart', label: 'Groceries', color: '#4CAF50' },
@@ -83,7 +95,71 @@ const SettingsScreen = ({ navigation }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState(null);
   const theme = useTheme();
+
+  useEffect(() => {
+    const checkSignInStatus = async () => {
+      try {
+        if (Platform.OS === 'ios') {
+          // iOS'ta direkt olarak getCurrentUser'ı kontrol edelim
+          const user = await GoogleSignin.getCurrentUser();
+          if (user) {
+            setUserInfo(user);
+          }
+        } else {
+          const isSignedIn = await GoogleSignin.isSignedIn();
+          if (isSignedIn) {
+            const user = await GoogleSignin.getCurrentUser();
+            setUserInfo(user);
+          }
+        }
+      } catch (error) {
+        // Sadece development ortamında hata logları gösterelim
+        if (__DEV__) {
+          console.log('Check sign in status info:', error);
+        }
+      }
+    };
+    
+    checkSignInStatus();
+  }, []);
+
+  const signIn = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const userInfo = await GoogleSignin.signIn();
+      setUserInfo(userInfo.data);
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        // User cancelled the sign-in flow
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        Alert.alert('Error', 'Sign in is already in progress');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        Alert.alert('Error', 'Play services are not available');
+      } else {
+        Alert.alert('Error', 'Something went wrong during sign in');
+        console.error('Sign-in error:', error);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      setLoading(true);
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      setUserInfo(null);
+    } catch (error) {
+      console.error('Sign out error:', error);
+      Alert.alert('Error', 'Something went wrong during sign out');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const debugStorageData = async () => {
     try {
@@ -315,6 +391,47 @@ const SettingsScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('settings.auth.title')}</Text>
+          {userInfo ? (
+            <>
+              <List.Item
+                title={userInfo.user.name}
+                description={userInfo.user.email}
+                left={props => 
+                  userInfo.user.photo ? (
+                    <Image 
+                      source={{ uri: userInfo.user.photo }} 
+                      style={styles.profilePhoto}
+                    />
+                  ) : (
+                    <List.Icon {...props} icon="account" color="#E6A4B4" />
+                  )
+                }
+              />
+              <Button
+                mode="outlined"
+                onPress={signOut}
+                style={[styles.authButton, styles.signOutButton]}
+                icon="logout"
+              >
+                {t('settings.auth.signOut')}
+              </Button>
+            </>
+          ) : (
+            <Button
+              mode="contained"
+              onPress={signIn}
+              style={[styles.authButton, styles.signInButton]}
+              icon="google"
+            >
+              {t('settings.auth.signInWithGoogle')}
+            </Button>
+          )}
+        </View>
+
+        <Divider style={styles.divider} />
+
+        <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('settings.lists.title')}</Text>
           <List.Item
             title={t('settings.lists.archive.title')}
@@ -463,6 +580,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5EEE6',
+  },
+  authButton: {
+    marginTop: 10,
+    marginHorizontal: 10,
+  },
+  signInButton: {
+    backgroundColor: '#E6A4B4',
+  },
+  signOutButton: {
+    borderColor: '#E6A4B4',
+    borderWidth: 1,
+  },
+  profilePhoto: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginLeft: 8,
+    marginRight: 8,
+    marginVertical: 8,
   },
 });
 

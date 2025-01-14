@@ -242,6 +242,12 @@
       "title": "Ayarlar",
       "subtitle": "Alışveriş deneyimini özelleştir"
     },
+    "auth": {
+      "title": "Hesap",
+      "signInWithGoogle": "Google ile Giriş Yap",
+      "signedInWithGoogle": "Google ile giriş yapıldı",
+      "signOut": "Çıkış Yap"
+    },
     "lists": {
       "title": "Listeler",
       "archive": {

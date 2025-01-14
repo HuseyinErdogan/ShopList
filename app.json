@@ -9,7 +9,7 @@
     "newArchEnabled": true,
     "assetBundlePatterns": ["**/*"],
     "splash": {
-      "image": "./assets/iTunesArtwork@2x.png",
+      "image": "./assets/itunes2x.png",
       "resizeMode": "contain",
       "backgroundColor": "#ff93cd"
     },
@@ -18,16 +18,18 @@
       "bundleIdentifier": "com.huseyinerdogan.dobydoby",
       "buildNumber": "1.0.0",
       "icon": "./assets/appstore.png",
-      "requireFullScreen": true
+      "requireFullScreen": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "package": "com.huseyinerdogan.dobydoby",
       "versionCode": 1,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/playstore-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/playstore_icon.png",
+        "backgroundColor": "#ff93cd"
       },
-      "icon": "./assets/playstore-icon.png"
+      "icon": "./assets/playstore-icon.png",
+      "googleServicesFile": "./google-services.json"
     },
     "extra": {
       "eas": {
@@ -40,7 +42,9 @@
         {
           "assetsPaths": ["./assets", "./src/assets"]
         }
-      ]
+      ],
+      "@react-native-google-signin/google-signin"
+
     ]
   }
 }

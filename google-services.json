@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "680530724531",
+    "project_id": "dobydoby-my-shopping-list",
+    "storage_bucket": "dobydoby-my-shopping-list.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:680530724531:android:70236589b4dca2cc7912c6",
+        "android_client_info": {
+          "package_name": "com.huseyinerdogan.dobydoby"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmxCmYAkLAXhTLFm7RDJiMrmi2PE48l-U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

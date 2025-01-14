@@ -242,6 +242,12 @@
       "title": "Settings",
       "subtitle": "Customize your shopping experience"
     },
+    "auth": {
+      "title": "Account",
+      "signInWithGoogle": "Sign in with Google",
+      "signedInWithGoogle": "Signed in with Google",
+      "signOut": "Sign Out"
+    },
     "lists": {
       "title": "Lists",
       "archive": {
