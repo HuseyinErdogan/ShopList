@@ -8,6 +8,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { getLists, getListItems, saveList, updateListItems } from '../utils/storage';
 import { useTranslation } from 'react-i18next';
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
+import { useAuth } from '../context/AuthContext';
 
 // Platform specific configuration
 if (Platform.OS === 'ios') {
@@ -95,15 +96,15 @@ const SettingsScreen = ({ navigation }) => {
   const [darkMode, setDarkMode] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userInfo, setUserInfo] = useState(null);
+  const { userInfo, setUserInfo } = useAuth();
   const theme = useTheme();
 
   useEffect(() => {
     const checkSignInStatus = async () => {
       try {
         if (Platform.OS === 'ios') {
-          // iOS'ta direkt olarak getCurrentUser'ı kontrol edelim
           const user = await GoogleSignin.getCurrentUser();
+          console.log('User:', user);
           if (user) {
             setUserInfo(user);
           }
@@ -115,7 +116,6 @@ const SettingsScreen = ({ navigation }) => {
           }
         }
       } catch (error) {
-        // Sadece development ortamında hata logları gösterelim
         if (__DEV__) {
           console.log('Check sign in status info:', error);
         }
@@ -123,14 +123,14 @@ const SettingsScreen = ({ navigation }) => {
     };
     
     checkSignInStatus();
-  }, []);
+  }, [setUserInfo]);
 
   const signIn = async () => {
     try {
       setLoading(true);
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const userInfo = await GoogleSignin.signIn();
-      setUserInfo(userInfo.data);
+      setUserInfo(userInfo);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // User cancelled the sign-in flow
@@ -392,7 +392,7 @@ const SettingsScreen = ({ navigation }) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>{t('settings.auth.title')}</Text>
-          {userInfo ? (
+          {userInfo?.user ? (
             <>
               <List.Item
                 title={userInfo.user.name}

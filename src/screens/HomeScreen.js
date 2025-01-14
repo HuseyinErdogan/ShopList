@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, Platform } from 'react-native';
+import { View, StyleSheet, ScrollView, SafeAreaView, StatusBar, TouchableOpacity, Platform, Image } from 'react-native';
 import { FAB, Card, Text, useTheme, IconButton, Searchbar, Menu, Dialog, Button } from 'react-native-paper';
 import { getLists, deleteList, calculateListTotal } from '../utils/storage';
 import { formatPrice, getCurrencySymbol } from '../utils/currency';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
 
 
 
@@ -123,6 +124,7 @@ const getTagShadowStyle = (tagColor) => {
 const HomeScreen = ({ navigation }) => {
   const theme = useTheme();
   const { t } = useTranslation();
+  const { userInfo } = useAuth();
   const [shoppingLists, setShoppingLists] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredLists, setFilteredLists] = useState([]);
@@ -241,6 +243,28 @@ const HomeScreen = ({ navigation }) => {
       
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{t('home.title')}</Text>
+        {userInfo?.user && (
+          <TouchableOpacity 
+            style={styles.userInfo}
+            onPress={() => navigation.navigate('Settings')}
+          >
+            {userInfo.user.photo ? (
+              <Image 
+                source={{ uri: userInfo.user.photo }} 
+                style={styles.userPhoto}
+              />
+            ) : (
+              <View style={styles.userInitials}>
+                <Text style={styles.initialsText}>
+                  {userInfo.user.name?.charAt(0)}
+                </Text>
+              </View>
+            )}
+            <Text style={styles.userName} numberOfLines={1}>
+              {userInfo.user.givenName || userInfo.user.name?.split(' ')[0]}
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       <View style={styles.filterContainer}>
@@ -673,6 +697,42 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderTopWidth: 1,
     borderTopColor: 'rgba(230, 164, 180, 0.1)',
+  },
+  userInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF8E3',
+    paddingVertical: 6,
+    paddingHorizontal: 8,
+    borderRadius: 20,
+    minWidth: 40,
+    maxWidth: 'auto',
+  },
+  userPhoto: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    marginRight: 8,
+  },
+  userInitials: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#E6A4B4',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  initialsText: {
+    color: '#FFF8E3',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  userName: {
+    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
+    marginRight: 4,
   },
 });
 
