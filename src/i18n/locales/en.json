@@ -243,10 +243,11 @@
       "subtitle": "Customize your shopping experience"
     },
     "auth": {
-      "title": "Account",
+      "title": "Authentication",
       "signInWithGoogle": "Sign in with Google",
       "signedInWithGoogle": "Signed in with Google",
-      "signOut": "Sign Out"
+      "signOut": "Sign Out",
+      "signingIn": "Signing in..."
     },
     "lists": {
       "title": "Lists",

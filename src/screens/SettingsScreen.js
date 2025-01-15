@@ -130,7 +130,10 @@ const SettingsScreen = ({ navigation }) => {
       setLoading(true);
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const userInfo = await GoogleSignin.signIn();
-      setUserInfo(userInfo);
+      
+      // Add a small delay to ensure userInfo is properly set
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      setUserInfo(userInfo.data);
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
         // User cancelled the sign-in flow
@@ -381,8 +384,11 @@ const SettingsScreen = ({ navigation }) => {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
         {loading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#E6A4B4" />
+          <View style={styles.loadingOverlay}>
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#E6A4B4" />
+              <Text style={styles.loadingText}>{t('settings.auth.signingIn')}</Text>
+            </View>
           </View>
         )}
         <View style={styles.header}>
@@ -413,6 +419,7 @@ const SettingsScreen = ({ navigation }) => {
                 onPress={signOut}
                 style={[styles.authButton, styles.signOutButton]}
                 icon="logout"
+                disabled={loading}
               >
                 {t('settings.auth.signOut')}
               </Button>
@@ -423,8 +430,9 @@ const SettingsScreen = ({ navigation }) => {
               onPress={signIn}
               style={[styles.authButton, styles.signInButton]}
               icon="google"
+              disabled={loading}
             >
-              {t('settings.auth.signInWithGoogle')}
+              {loading ? t('settings.auth.signingIn') : t('settings.auth.signInWithGoogle')}
             </Button>
           )}
         </View>
@@ -575,11 +583,27 @@ const styles = StyleSheet.create({
   dangerButtonText: {
     color: '#FFFFFF',
   },
-  loadingContainer: {
-    flex: 1,
+  loadingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5EEE6',
+    zIndex: 1000,
+  },
+  loadingContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    color: '#333',
+    fontSize: 16,
   },
   authButton: {
     marginTop: 10,
