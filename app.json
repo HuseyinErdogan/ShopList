@@ -43,8 +43,20 @@
           "assetsPaths": ["./assets", "./src/assets"]
         }
       ],
-      "@react-native-google-signin/google-signin"
-
-    ]
+      "@react-native-google-signin/google-signin",
+      [
+        "@react-native-firebase/app",
+        {
+          "ios_google_services_file": "./GoogleService-Info.plist",
+          "android_google_services_file": "./google-services.json"
+        }
+      ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/803e46c6-eea4-4bae-81d6-7f7bd80206e1"
+    }
   }
 }

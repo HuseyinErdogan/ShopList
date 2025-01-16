@@ -6,6 +6,8 @@ import { formatPrice, getCurrencySymbol } from '../utils/currency';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
 
 
 
@@ -137,7 +139,41 @@ const HomeScreen = ({ navigation }) => {
 
   useEffect(() => {
     loadLists();
-  }, []);
+    
+    // Test Firestore write operation when user is logged in
+    if (userInfo?.user && userInfo?.idToken) {
+      console.log('UserInfo:', JSON.stringify(userInfo, null, 2));
+      
+      const signInToFirebase = async () => {
+        try {
+          // Google Auth'dan gelen idToken ile Firebase'de oturum açma
+          const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
+          
+          // Firebase Auth ile giriş yap
+          const firebaseUserCredential = await auth().signInWithCredential(googleCredential);
+          console.log('Firebase Auth successful:', firebaseUserCredential.user.uid);
+          
+          // Firestore'a veri yazma
+          const userDocRef = firestore()
+            .collection('users')
+            .doc(firebaseUserCredential.user.uid);
+          
+          await userDocRef.set({
+            name: userInfo.user.name || '',
+            email: userInfo.user.email || '',
+            lastLogin: firestore.FieldValue.serverTimestamp(),
+            photoURL: userInfo.user.photo || null,
+          }, { merge: true });
+          
+          console.log('Test write to Firestore successful!');
+        } catch (error) {
+          console.error('Firebase operation error:', error.code, error.message);
+        }
+      };
+      
+      signInToFirebase();
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {

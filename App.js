@@ -8,12 +8,27 @@ import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { AuthProvider } from './src/context/AuthContext';
+import firebase from '@react-native-firebase/app';
 
 import HomeScreen from './src/screens/HomeScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import CreateListScreen from './src/screens/CreateListScreen';
 import ListDetailsScreen from './src/screens/ListDetailsScreen';
 import ArchivedListsScreen from './src/screens/ArchivedListsScreen';
+
+// Initialize Firebase if it hasn't been initialized yet
+if (!firebase.apps.length) {
+  const firebaseConfig = {
+    apiKey: "AIzaSyDOifoQGyXZKJJxIf5f7a3K-vfPdek3yHo",
+    clientId: "680530724531-rer6em86iocmhmiv7ga921e99vmqq8d4.apps.googleusercontent.com",
+    appId: "1:680530724531:ios:f83758fbbb457f607912c6",
+    projectId: "dobydoby-my-shopping-list",
+    storageBucket: "dobydoby-my-shopping-list.firebasestorage.app",
+    messagingSenderId: "680530724531",
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+}
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();

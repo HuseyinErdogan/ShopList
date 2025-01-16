@@ -104,7 +104,6 @@ const SettingsScreen = ({ navigation }) => {
       try {
         if (Platform.OS === 'ios') {
           const user = await GoogleSignin.getCurrentUser();
-          console.log('User:', user);
           if (user) {
             setUserInfo(user);
           }
